@@ -22,10 +22,13 @@ export const getPrefectures = (): { code: string, name: string }[] => {
 }
 
 export const getByJobAndPrefecture = (values: VALUE[], prefectureCode: string, jobCode: string): number | null => {
-    const entry = values.find(v => v["@cat02"] == jobCode && v["@area"] == prefectureCode);
-    if (!entry)
+    const baseSalary = values.find(v => v["@tab"] == "40" && v["@cat02"] == jobCode && v["@area"] == prefectureCode);
+    const bonus = values.find(v => v["@tab"] == "44" && v["@cat02"] == jobCode && v["@area"] == prefectureCode);
+    console.log(baseSalary?.$);
+    console.log(bonus?.$);
+    if (!baseSalary || !bonus)
         return null;
-    return Number(entry.$);
+    return Math.round(Number(baseSalary.$) + Number(bonus.$));
 }
 export const getByPrefecture = (values: VALUE[], prefectureCode: string): { job: { code: string, name: string }, amount: number }[] => {
     const jobs = getJobs();
