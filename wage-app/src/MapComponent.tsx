@@ -140,7 +140,7 @@ const MapComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => 
                         {mappings.map(m => m)}
                     </g></g>
             </svg>
-            {statistics.map(s => <p>{s.job.name}: {s.amount * 1000} yen / month</p>)}
+            {statistics.map(s => <p>{s.job.name}: {s.amount * 1000} yen / year</p>)}
         </>
     );
 };
