@@ -1,5 +1,5 @@
 import { translatedJobs, translatedPrefectures } from "./data-translation";
-import { VALUE } from "./types";
+import { IndustryJobs, PrefectureCategoryEntry, VALUE } from "./types";
 
 export const fetchData = async () => {
     try {
@@ -13,7 +13,7 @@ export const fetchData = async () => {
     }
 };
 
-export const getJobs = (): { code: string, name: string }[] => {
+export const getJobs = (): IndustryJobs => {
     return translatedJobs;
 }
 
@@ -28,13 +28,17 @@ export const getByJobAndPrefecture = (values: VALUE[], prefectureCode: string, j
         return null;
     return Math.round(Number(baseSalary.$) * 12 + Number(bonus.$));
 }
-export const getByPrefecture = (values: VALUE[], prefectureCode: string): { job: { code: string, name: string }, amount: number }[] => {
-    const jobs = getJobs();
-    const entries: { job: { code: string, name: string }, amount: number }[] = []
-    for (const job of jobs) {
-        const amount = getByJobAndPrefecture(values, prefectureCode, job.code)
-        if (amount)
-            entries.push({ job: job, amount: amount })
+export const getByPrefecture = (values: VALUE[], prefectureCode: string): PrefectureCategoryEntry[] => {
+    //const entries: { job: { code: string, name: string }, amount: number }[] = []
+    const entries: PrefectureCategoryEntry[] = [];
+    for (const category in translatedJobs) {
+        const entry: PrefectureCategoryEntry = { category: category, values: [] }
+        for (const job of translatedJobs[category]) {
+            const amount = getByJobAndPrefecture(values, prefectureCode, job.code)
+            if (amount)
+                entry.values.push({ job: job, amount: amount })
+        }
+        entries.push(entry)
     }
     return entries
 }

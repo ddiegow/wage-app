@@ -1,12 +1,12 @@
 import { JSX, useEffect, useState } from "react";
-import { WageData } from "./lib/types";
+import { PrefectureCategoryEntry, WageData } from "./lib/types";
 import { getByPrefecture } from "./lib/data-fetching";
 import { translatedPrefectures } from "./lib/data-translation";
 
 
 const MapComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => {
     const [mappings, setMappings] = useState<(JSX.Element)[]>([])
-    const [statistics, setStatistics] = useState<{ job: { code: string, name: string }, amount: number }[]>([]);
+    const [statistics, setStatistics] = useState<PrefectureCategoryEntry[]>([]);
     const [selectedPrefecture, setSelectedPrefecture] = useState("");
     const [hoveredPrefecture, setHoveredPrefecture] = useState("");
     const handleClick = (code: string) => {
@@ -148,26 +148,33 @@ const MapComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => 
             </svg>
             {statistics.length > 0 &&
 
-                (<><h3 className="text-lg py-5">Wage statistics for {translatedPrefectures[Number(selectedPrefecture)].name}</h3><table className="border-1 border-white border-solid">
-                    <thead>
-                        <tr>
-                            <th className="text-left border-1 border-white border-solid p-1 pl-2">Job</th>
-                            <th className="text-left border-1 border-white border-solid p-1 pl-2">Yearly salary</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {statistics.map(s =>
-                            <tr>
-                                <td className="text-left break-words w-1/2 border-1 border-white border-solid p-1 pl-2">
-                                    {s.job.name}
-                                </td>
-                                <td className="text-left border-1 border-white border-solid p-1 pl-2">
-                                    {s.amount * 1000} yen
-                                </td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table></>)}
+                (<>
+                    <h3 className="text-lg py-5">Wage statistics for {translatedPrefectures[Number(selectedPrefecture)].name}</h3>
+
+                    {statistics.map(category => <>
+                        <h4>{category.category}</h4>
+                        <table className="border-1 border-white border-solid">
+                            <thead>
+                                <tr>
+                                    <th className="text-left border-1 border-white border-solid p-1 pl-2">Job</th>
+                                    <th className="text-left border-1 border-white border-solid p-1 pl-2">Yearly salary</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {category.values.map(value => <tr>
+                                    <td className="text-left break-words w-1/2 border-1 border-white border-solid p-1 pl-2">
+                                        {value.job.name}
+                                    </td>
+                                    <td className="text-left border-1 border-white border-solid p-1 pl-2">
+                                        {value.amount * 1000} yen
+                                    </td>
+                                </tr>)}
+
+                            </tbody>
+                        </table>
+                    </>
+                    )}
+                </>)}
 
         </>
     );

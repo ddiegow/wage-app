@@ -113,3 +113,25 @@ export interface RESULT {
     ERROR_MSG: string;
     DATE: string;
 }
+
+export type Job = {
+    code: string;
+    name: string;
+};
+
+export type IndustryJobs = {
+    [industry: string]: Job[];
+};
+
+export type PrefectureCategoryEntry = {
+    category: string,
+    values: PrefectureEntryValue[]
+}
+
+export type PrefectureEntryValue = {
+    job: {
+        code: string,
+        name: string
+    },
+    amount: number
+}
