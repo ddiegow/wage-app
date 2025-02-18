@@ -7,13 +7,14 @@ import { translatedPrefectures } from "./lib/data-translation";
 const MapComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => {
     const [mappings, setMappings] = useState<(JSX.Element)[]>([])
     const [statistics, setStatistics] = useState<{ job: { code: string, name: string }, amount: number }[]>([]);
+    const [selectedPrefecture, setSelectedPrefecture] = useState("");
+    const [hoveredPrefecture, setHoveredPrefecture] = useState("");
     const handleClick = (code: string) => {
         if (!wageData) {
             console.log('No wage data');
             return;
         }
-        console.log(translatedPrefectures[Number(code)].name)
-        console.log('original code: ', code)
+        setSelectedPrefecture(code)
         if (!code.length)
             return;
         if (Number(code) < 10) {
@@ -21,11 +22,9 @@ const MapComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => 
         } else {
             code = code + "000";
         }
-        console.log('code after transform: ', code);
         const data = getByPrefecture(wageData.GET_STATS_DATA.STATISTICAL_DATA.DATA_INF.VALUE, code);
         setStatistics(data)
     }
-    console.log('re rendering')
     useEffect(() => {
         fetch("/maps/map-full.svg")
             .then((res) => {
@@ -37,6 +36,15 @@ const MapComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => 
 
                 const allG = Array.from(svgDoc.querySelectorAll<SVGGElement>("g.prefecture"))
                 const mapping = allG.map((g: SVGGElement) => {
+                    const prefCode = g.getAttribute("data-code") || "";
+                    const isSelected = prefCode === selectedPrefecture;
+                    const isHovered = prefCode === hoveredPrefecture;
+
+                    const getFillColor = () => {
+                        if (isSelected) return "#ff0000";
+                        if (isHovered) return "#ff0000";
+                        return "#EEEEEE";
+                    };
                     // if we're at a polygon element
                     if (g.querySelectorAll<SVGPolygonElement>("polygon").length) {
                         // create a new react element
@@ -66,19 +74,18 @@ const MapComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => 
                         const paths = pathDefs.map(d =>
                             <path key={d} d={d} />
                         );
-
                         return (
                             <g
                                 transform={g.getAttribute("transform") || ""}
                                 className={g.classList.toString()}
                                 strokeLinejoin="round"
-                                fill="#EEEEEE"
+                                fill={getFillColor()}
                                 fillRule="nonzero"
                                 stroke="#000000"
                                 strokeWidth="1.0"
                                 data-code={g.getAttribute("data-code") || ""}
-                                onMouseOver={(e) => ((e.currentTarget as SVGPathElement).style.fill = "#ff0000")}
-                                onMouseLeave={(e) => ((e.currentTarget as SVGPathElement).style.fill = "")}
+                                onMouseOver={() => setHoveredPrefecture(prefCode)}
+                                onMouseLeave={() => setHoveredPrefecture("")}
                                 onClick={(e) => handleClick(e.currentTarget.getAttribute("data-code") || "")}
                             >
                                 <title>{g.querySelector('title')?.textContent || ""}</title>
@@ -109,16 +116,15 @@ const MapComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => 
                             // if it's another kind (which there isn't) return null
                             return null;
                         });
-
                         return (
                             <g
                                 transform={g.getAttribute("transform") || ""}
                                 className={g.classList.toString()}
-                                fill={g.getAttribute("fill") || "#EEEEEE"}
+                                fill={getFillColor()}
                                 stroke={g.getAttribute("stroke") || "#000000"}
                                 strokeWidth={g.getAttribute("stroke-width") || "1.0"}
-                                onMouseOver={(e) => ((e.currentTarget as SVGPathElement).style.fill = "#ff0000")}
-                                onMouseLeave={(e) => ((e.currentTarget as SVGPathElement).style.fill = "")}
+                                onMouseOver={() => setHoveredPrefecture(prefCode)}
+                                onMouseLeave={() => setHoveredPrefecture("")}
                                 data-code={g.getAttribute("data-code") || ""}
                                 onClick={(e) => handleClick(e.currentTarget.getAttribute("data-code") || "")}
                             >
@@ -130,7 +136,7 @@ const MapComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => 
                 setMappings(mapping)
             })
             .catch((err) => console.error("Error loading SVG:", err));
-    }, [wageData]);
+    }, [wageData, selectedPrefecture, hoveredPrefecture]);
     return (
         <>
             <svg viewBox="0 0 1000 1000" width="100%" height="auto">
@@ -140,7 +146,29 @@ const MapComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => 
                         {mappings.map(m => m)}
                     </g></g>
             </svg>
-            {statistics.map(s => <p>{s.job.name}: {s.amount * 1000} yen / year</p>)}
+            {statistics.length > 0 &&
+
+                (<><h3 className="text-lg py-5">Wage statistics for {translatedPrefectures[Number(selectedPrefecture)].name}</h3><table className="border-1 border-white border-solid">
+                    <thead>
+                        <tr>
+                            <th className="text-left border-1 border-white border-solid p-1 pl-2">Job</th>
+                            <th className="text-left border-1 border-white border-solid p-1 pl-2">Yearly salary</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {statistics.map(s =>
+                            <tr>
+                                <td className="text-left break-words w-1/2 border-1 border-white border-solid p-1 pl-2">
+                                    {s.job.name}
+                                </td>
+                                <td className="text-left border-1 border-white border-solid p-1 pl-2">
+                                    {s.amount * 1000} yen
+                                </td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table></>)}
+
         </>
     );
 };
