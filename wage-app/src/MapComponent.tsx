@@ -9,7 +9,7 @@ const MapComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => 
     const [statistics, setStatistics] = useState<PrefectureCategoryEntry[]>([]);
     const [selectedPrefecture, setSelectedPrefecture] = useState("");
     const [hoveredPrefecture, setHoveredPrefecture] = useState("");
-    const [selectedIndustry, setSelectedIndustry] = useState(Object.keys(translatedJobs)[0]);
+    const [selectedIndustry, setSelectedIndustry] = useState("");
     const handleClick = (code: string) => {
         if (!wageData) {
             console.log('No wage data');
@@ -140,7 +140,7 @@ const MapComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => 
             .catch((err) => console.error("Error loading SVG:", err));
     }, [wageData, selectedPrefecture, hoveredPrefecture]);
     return (
-        <div className="flex gap-50">
+        <div className="flex gap-20">
             <svg viewBox="0 0 1000 1000" width="100%" height="auto">
                 <title>{"Japanese Prefectures"}</title>
                 <g strokeLinejoin="round" className="svg-map">
@@ -148,8 +148,12 @@ const MapComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => 
                         {mappings.map(m => m)}
                     </g></g>
             </svg>
-            {statistics.length > 0 &&
-                (<div>
+            {statistics.length > 0 && !selectedIndustry.length && <div className="grid grid-cols-3 items-stretch justify-center items-center gap-2">
+                {statistics.map(s => <p onClick={() => setSelectedIndustry(s.category)} className="hover:cursor-pointer border-white border-solid border-1 p-5 text-center text-pretty">{s.category}</p>)}
+            </div>}
+            {statistics.length > 0 && selectedIndustry.length &&
+                (<div className="hover:cursor-pointer" onClick={() => setSelectedIndustry("")}>
+
                     <h3 className="text-lg py-5 font-bold">Wage statistics for {translatedPrefectures[Number(selectedPrefecture)].name}</h3>
                     <select className="mb-5" name="selectedIndustry" id="selectedIndustry" value={selectedIndustry} onChange={e => setSelectedIndustry(e.target.value)}>
                         {statistics.map(s => <option value={s.category}>{s.category}</option>)}
