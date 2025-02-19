@@ -9,11 +9,13 @@ const MapComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => 
     const [statistics, setStatistics] = useState<PrefectureCategoryEntry[]>([]);
     const [selectedPrefecture, setSelectedPrefecture] = useState("");
     const [hoveredPrefecture, setHoveredPrefecture] = useState("");
+    const [selectedIndustry, setSelectedIndustry] = useState("");
     const handleClick = (code: string) => {
         if (!wageData) {
             console.log('No wage data');
             return;
         }
+
         setSelectedPrefecture(code)
         if (!code.length)
             return;
@@ -23,6 +25,7 @@ const MapComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => 
             code = code + "000";
         }
         const data = getByPrefecture(wageData.GET_STATS_DATA.STATISTICAL_DATA.DATA_INF.VALUE, code);
+        setSelectedIndustry(data[0].category)
         setStatistics(data)
     }
     useEffect(() => {
@@ -136,9 +139,9 @@ const MapComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => 
                 setMappings(mapping)
             })
             .catch((err) => console.error("Error loading SVG:", err));
-    }, [wageData, selectedPrefecture, hoveredPrefecture]);
+    }, [wageData, selectedPrefecture, hoveredPrefecture, selectedIndustry]);
     return (
-        <>
+        <div className="flex gap-50">
             <svg viewBox="0 0 1000 1000" width="100%" height="auto">
                 <title>{"Japanese Prefectures"}</title>
                 <g strokeLinejoin="round" className="svg-map">
@@ -147,37 +150,32 @@ const MapComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => 
                     </g></g>
             </svg>
             {statistics.length > 0 &&
-
-                (<>
+                (<div>
                     <h3 className="text-lg py-5">Wage statistics for {translatedPrefectures[Number(selectedPrefecture)].name}</h3>
-
-                    {statistics.map(category => <>
-                        <h4>{category.category}</h4>
-                        <table className="border-1 border-white border-solid">
-                            <thead>
-                                <tr>
-                                    <th className="text-left border-1 border-white border-solid p-1 pl-2">Job</th>
-                                    <th className="text-left border-1 border-white border-solid p-1 pl-2">Yearly salary</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {category.values.map(value => <tr>
-                                    <td className="text-left break-words w-1/2 border-1 border-white border-solid p-1 pl-2">
-                                        {value.job.name}
-                                    </td>
-                                    <td className="text-left border-1 border-white border-solid p-1 pl-2">
-                                        {value.amount * 1000} yen
-                                    </td>
-                                </tr>)}
-
-                            </tbody>
-                        </table>
-                    </>
-                    )}
-                </>)}
-
-        </>
-    );
+                    <select name="selectedIndustry" id="selectedIndustry" defaultValue={selectedIndustry} onChange={e => setSelectedIndustry(e.target.value)}>
+                        {statistics.map(s => <option value={s.category}>{s.category}</option>)}
+                    </select>
+                    <table className="border-1 border-white border-solid">
+                        <thead>
+                            <tr>
+                                <th className="text-left border-1 border-white border-solid p-1 pl-2">Job</th>
+                                <th className="text-left border-1 border-white border-solid p-1 pl-2">Yearly salary</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {statistics.filter(c => c.category === selectedIndustry)[0].values.map(value => <tr>
+                                <td className="text-left break-words w-1/2 border-1 border-white border-solid p-1 pl-2">
+                                    {value.job.name}
+                                </td>
+                                <td className="text-left border-1 border-white border-solid p-1 pl-2">
+                                    {value.amount * 1000} yen
+                                </td>
+                            </tr>)}
+                        </tbody>
+                    </table>
+                </div>
+                )}
+        </div>)
 };
 
 
