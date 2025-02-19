@@ -1,7 +1,7 @@
 import { JSX, useEffect, useState } from "react";
 import { PrefectureCategoryEntry, WageData } from "./lib/types";
 import { getByPrefecture } from "./lib/data-fetching";
-import { translatedPrefectures } from "./lib/data-translation";
+import { translatedJobs, translatedPrefectures } from "./lib/data-translation";
 
 
 const MapComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => {
@@ -9,7 +9,7 @@ const MapComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => 
     const [statistics, setStatistics] = useState<PrefectureCategoryEntry[]>([]);
     const [selectedPrefecture, setSelectedPrefecture] = useState("");
     const [hoveredPrefecture, setHoveredPrefecture] = useState("");
-    const [selectedIndustry, setSelectedIndustry] = useState("");
+    const [selectedIndustry, setSelectedIndustry] = useState(Object.keys(translatedJobs)[0]);
     const handleClick = (code: string) => {
         if (!wageData) {
             console.log('No wage data');
@@ -25,7 +25,6 @@ const MapComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => 
             code = code + "000";
         }
         const data = getByPrefecture(wageData.GET_STATS_DATA.STATISTICAL_DATA.DATA_INF.VALUE, code);
-        setSelectedIndustry(data[0].category)
         setStatistics(data)
     }
     useEffect(() => {
@@ -139,7 +138,7 @@ const MapComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => 
                 setMappings(mapping)
             })
             .catch((err) => console.error("Error loading SVG:", err));
-    }, [wageData, selectedPrefecture, hoveredPrefecture, selectedIndustry]);
+    }, [wageData, selectedPrefecture, hoveredPrefecture]);
     return (
         <div className="flex gap-50">
             <svg viewBox="0 0 1000 1000" width="100%" height="auto">
@@ -151,8 +150,8 @@ const MapComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => 
             </svg>
             {statistics.length > 0 &&
                 (<div>
-                    <h3 className="text-lg py-5">Wage statistics for {translatedPrefectures[Number(selectedPrefecture)].name}</h3>
-                    <select name="selectedIndustry" id="selectedIndustry" defaultValue={selectedIndustry} onChange={e => setSelectedIndustry(e.target.value)}>
+                    <h3 className="text-lg py-5 font-bold">Wage statistics for {translatedPrefectures[Number(selectedPrefecture)].name}</h3>
+                    <select className="mb-5" name="selectedIndustry" id="selectedIndustry" value={selectedIndustry} onChange={e => setSelectedIndustry(e.target.value)}>
                         {statistics.map(s => <option value={s.category}>{s.category}</option>)}
                     </select>
                     <table className="border-1 border-white border-solid">
