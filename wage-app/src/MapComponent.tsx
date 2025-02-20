@@ -1,7 +1,6 @@
 import { JSX, useEffect, useState } from "react";
 import { PrefectureCategoryEntry, WageData } from "./lib/types";
 import { getByPrefecture } from "./lib/data-fetching";
-import { translatedPrefectures } from "./lib/data-translation";
 
 
 const MapComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => {
@@ -10,6 +9,7 @@ const MapComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => 
     const [selectedPrefecture, setSelectedPrefecture] = useState("");
     const [hoveredPrefecture, setHoveredPrefecture] = useState("");
     const [selectedIndustry, setSelectedIndustry] = useState("");
+    const [industryClickedIndex, setIndustryClickedIndex] = useState<number>(-1)
     const handleClick = (code: string) => {
         if (!wageData) {
             console.log('No wage data');
@@ -148,32 +148,27 @@ const MapComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => 
                         {mappings.map(m => m)}
                     </g></g>
             </svg>
-            {statistics.length > 0 && !selectedIndustry.length && <div className="grid grid-cols-3 items-stretch justify-center items-center gap-2">
-                {statistics.map(s => <p onClick={() => setSelectedIndustry(s.category)} className="hover:cursor-pointer border-white border-solid border-1 p-3 text-center">{s.category}</p>)}
-            </div>}
-            {statistics.length > 0 && selectedIndustry.length &&
-                (<div className="hover:cursor-pointer mr-10" onClick={() => setSelectedIndustry("")}>
-                    <h3 className="text-lg py-5 font-bold">Wage statistics for {translatedPrefectures[Number(selectedPrefecture)].name}</h3>
-                    <table className="border-1 border-white border-solid">
-                        <thead>
-                            <tr>
-                                <th className="text-left border-1 border-white border-solid p-1 pl-2">Job</th>
-                                <th className="text-left border-1 border-white border-solid p-1 pl-2">Yearly salary</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {statistics.filter(c => c.category === selectedIndustry)[0].values.map(value => <tr>
-                                <td className="text-left break-words w-1/2 border-1 border-white border-solid p-1 pl-2">
-                                    {value.job.name}
-                                </td>
-                                <td className="text-left border-1 border-white border-solid p-1 pl-2">
-                                    {value.amount * 1000} yen
-                                </td>
-                            </tr>)}
-                        </tbody>
-                    </table>
-                </div>
-                )}
+            {statistics.length > 0 &&
+                <div className="grid grid-cols-3 items-stretch justify-center items-center gap-2">
+                    {!selectedIndustry.length &&
+                        statistics.map((s, index) => <p key={index} onClick={() => {
+                            setIndustryClickedIndex(index);
+                            setTimeout(() => {
+                                setSelectedIndustry(s.category)
+                                setIndustryClickedIndex(-1)
+                            }, 1000
+                            )
+                            //setSelectedIndustry(s.category)
+
+                        }} className={`transition-opacity duration-1000 ease-out ${industryClickedIndex === index ? "opacity-0" : "opacity-100"} hover:cursor-pointer border-white border-solid border-1 p-3 text-center`}>{s.category}</p>)}
+                    {selectedIndustry.length > 0 &&
+                        statistics.filter(c =>
+                            c.category === selectedIndustry)[0].values.map(value =>
+                                <p onClick={() => setSelectedIndustry("")} className="border-white border-solid border-1 p-3 text-center">
+                                    {value.job.name}: {value.amount * 1000}
+                                </p>)
+                    }
+                </div>}
         </div>)
 };
 
