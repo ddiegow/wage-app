@@ -1,6 +1,7 @@
 import { JSX, useEffect, useState } from "react";
 import { PrefectureCategoryEntry, WageData } from "./lib/types";
 import { getByPrefecture } from "./lib/data-fetching";
+import { translatedPrefectures } from "./lib/data-translation";
 
 
 const MapComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => {
@@ -9,7 +10,7 @@ const MapComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => 
     const [selectedPrefecture, setSelectedPrefecture] = useState("");
     const [hoveredPrefecture, setHoveredPrefecture] = useState("");
     const [selectedIndustry, setSelectedIndustry] = useState("");
-    const [industryClickedIndex, setIndustryClickedIndex] = useState<number>(-1)
+    const [industryClickedIndex, setIndustryClickedIndex] = useState(false)
     const handleClick = (code: string) => {
         if (!wageData) {
             console.log('No wage data');
@@ -79,7 +80,7 @@ const MapComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => 
                         return (
                             <g
                                 transform={g.getAttribute("transform") || ""}
-                                className={g.classList.toString()}
+                                className={g.classList.toString() + " hover:cursor-pointer"}
                                 strokeLinejoin="round"
                                 fill={getFillColor()}
                                 fillRule="nonzero"
@@ -121,7 +122,7 @@ const MapComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => 
                         return (
                             <g
                                 transform={g.getAttribute("transform") || ""}
-                                className={g.classList.toString()}
+                                className={g.classList.toString() + " hover:cursor-pointer"}
                                 fill={getFillColor()}
                                 stroke={g.getAttribute("stroke") || "#000000"}
                                 strokeWidth={g.getAttribute("stroke-width") || "1.0"}
@@ -149,24 +150,37 @@ const MapComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => 
                     </g></g>
             </svg>
             {statistics.length > 0 &&
-                <div className="grid grid-cols-3 items-stretch justify-center items-center gap-2">
+
+                <div className={`transition-opacity duration-500 ease-out ${industryClickedIndex ? "opacity-0" : "opacity-100"}  grid grid-cols-3 items-stretch justify-center items-center gap-2 m-5 min-w-1/2`}>
                     {!selectedIndustry.length &&
                         statistics.map((s, index) => <p key={index} onClick={() => {
-                            setIndustryClickedIndex(index);
+                            setIndustryClickedIndex(true);
                             setTimeout(() => {
                                 setSelectedIndustry(s.category)
-                                setIndustryClickedIndex(-1)
-                            }, 1000
+                                setIndustryClickedIndex(false)
+                            }, 500
                             )
                             //setSelectedIndustry(s.category)
 
-                        }} className={`transition-opacity duration-1000 ease-out ${industryClickedIndex === index ? "opacity-0" : "opacity-100"} hover:cursor-pointer border-white border-solid border-1 p-3 text-center`}>{s.category}</p>)}
+                        }} className={"hover:cursor-pointer hover:bg-blue-700 border-white border-solid border-1 p-3 text-center"}>{s.category}</p>)}
                     {selectedIndustry.length > 0 &&
                         statistics.filter(c =>
                             c.category === selectedIndustry)[0].values.map(value =>
-                                <p onClick={() => setSelectedIndustry("")} className="border-white border-solid border-1 p-3 text-center">
-                                    {value.job.name}: {value.amount * 1000}
-                                </p>)
+                                <div onClick={() => {
+                                    setIndustryClickedIndex(true);
+                                    setTimeout(() => {
+                                        setSelectedIndustry("")
+                                        setIndustryClickedIndex(false)
+                                    }, 500
+                                    )
+                                    //setSelectedIndustry(s.category)
+
+                                }} className="hover:cursor-pointer hover:bg-blue-700 border-white border-solid border-1 p-3 text-center">
+                                    <p >
+                                        {value.job.name}
+                                    </p>
+                                    <p>{value.amount * 1000}</p>
+                                </div>)
                     }
                 </div>}
         </div>)
