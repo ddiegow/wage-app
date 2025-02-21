@@ -141,49 +141,54 @@ const MapComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => 
             .catch((err) => console.error("Error loading SVG:", err));
     }, [wageData, selectedPrefecture, hoveredPrefecture]);
     return (
-        <div className="flex gap-20 h-screen">
-            <svg viewBox="0 0 1000 1000" width="100%" height="auto">
-                <title>{"Japanese Prefectures"}</title>
-                <g strokeLinejoin="round" className="svg-map">
-                    <g fill="#EEE" stroke="#000" className="prefectures">
-                        {mappings.map(m => m)}
-                    </g></g>
-            </svg>
-            {statistics.length > 0 &&
+        <div className="h-screen">
+            <h3 className="text-center mt-5 mb-5 text-3xl">
+                {!selectedPrefecture && "Please select a prefecture"}
+                {selectedPrefecture && translatedPrefectures[Number(selectedPrefecture)].name + " Prefecture"}
+            </h3>
+            <div className={"flex gap-20 justify-center " + (!selectedPrefecture ? "h-9/10" : "")}>
+                <svg viewBox="0 0 1000 1000" height="100%" width="100%">
+                    <title>{"Japanese Prefectures"}</title>
+                    <g strokeLinejoin="round" className="svg-map">
+                        <g fill="#EEE" stroke="#000" className="prefectures">
+                            {mappings.map(m => m)}
+                        </g></g>
+                </svg>
+                {statistics.length > 0 &&
+                    <div className={`transition-opacity duration-500 ease-out ${industryClickedIndex ? "opacity-0" : "opacity-100"}  grid grid-cols-3 items-stretch justify-center items-center gap-2 m-5 min-w-1/2`}>
+                        {!selectedIndustry.length &&
+                            statistics.map((s, index) => <p key={index} onClick={() => {
+                                setIndustryClickedIndex(true);
+                                setTimeout(() => {
+                                    setSelectedIndustry(s.category)
+                                    setIndustryClickedIndex(false)
+                                }, 500
+                                )
+                                //setSelectedIndustry(s.category)
 
-                <div className={`transition-opacity duration-500 ease-out ${industryClickedIndex ? "opacity-0" : "opacity-100"}  grid grid-cols-3 items-stretch justify-center items-center gap-2 m-5 min-w-1/2`}>
-                    {!selectedIndustry.length &&
-                        statistics.map((s, index) => <p key={index} onClick={() => {
-                            setIndustryClickedIndex(true);
-                            setTimeout(() => {
-                                setSelectedIndustry(s.category)
-                                setIndustryClickedIndex(false)
-                            }, 500
-                            )
-                            //setSelectedIndustry(s.category)
+                            }} className={"hover:cursor-pointer hover:bg-blue-700 border-white border-solid border-1 p-3 text-center"}>{s.category}</p>)}
+                        {selectedIndustry.length > 0 &&
+                            statistics.filter(c =>
+                                c.category === selectedIndustry)[0].values.map(value =>
+                                    <div onClick={() => {
+                                        setIndustryClickedIndex(true);
+                                        setTimeout(() => {
+                                            setSelectedIndustry("")
+                                            setIndustryClickedIndex(false)
+                                        }, 500
+                                        )
+                                        //setSelectedIndustry(s.category)
 
-                        }} className={"hover:cursor-pointer hover:bg-blue-700 border-white border-solid border-1 p-3 text-center"}>{s.category}</p>)}
-                    {selectedIndustry.length > 0 &&
-                        statistics.filter(c =>
-                            c.category === selectedIndustry)[0].values.map(value =>
-                                <div onClick={() => {
-                                    setIndustryClickedIndex(true);
-                                    setTimeout(() => {
-                                        setSelectedIndustry("")
-                                        setIndustryClickedIndex(false)
-                                    }, 500
-                                    )
-                                    //setSelectedIndustry(s.category)
+                                    }} className="hover:cursor-pointer hover:bg-blue-700 border-white border-solid border-1 p-3 text-center">
+                                        <p >
+                                            {value.job.name}
+                                        </p>
+                                        <p>{value.amount * 1000}</p>
+                                    </div>)
+                        }
+                    </div>}
+            </div></div >)
 
-                                }} className="hover:cursor-pointer hover:bg-blue-700 border-white border-solid border-1 p-3 text-center">
-                                    <p >
-                                        {value.job.name}
-                                    </p>
-                                    <p>{value.amount * 1000}</p>
-                                </div>)
-                    }
-                </div>}
-        </div>)
 };
 
 
