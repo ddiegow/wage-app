@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import './App.css'
 import { fetchData, } from './lib/data-fetching'
 import { WageData } from './lib/types'
-import MapComponent from './MapComponent'
+import ViewComponent from './ViewComponent'
 
 function App() {
   const [data, setData] = useState<WageData | null>(null);
@@ -21,7 +21,7 @@ function App() {
   }, [])
   return (
     <>
-      <MapComponent wageData={data} />
+      <ViewComponent wageData={data} />
     </>
   )
 }

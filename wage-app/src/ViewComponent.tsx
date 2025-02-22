@@ -2,9 +2,10 @@ import { JSX, useEffect, useState } from "react";
 import { PrefectureCategoryEntry, WageData } from "./lib/types";
 import { getByPrefecture } from "./lib/data-fetching";
 import { translatedPrefectures } from "./lib/data-translation";
+import IndustryComponent from "./IndustryComponent";
 
 
-const MapComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => {
+const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => {
     const [mappings, setMappings] = useState<(JSX.Element)[]>([])
     const [statistics, setStatistics] = useState<PrefectureCategoryEntry[]>([]);
     const [selectedPrefecture, setSelectedPrefecture] = useState("");
@@ -143,6 +144,7 @@ const MapComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => 
     }, [wageData, selectedPrefecture, hoveredPrefecture]);
     return (
         <div className="h-screen">
+            {/* top bar (buttons + title) */}
             <div className="flex justify-evenly m-5">
                 <p
                     className={
@@ -169,6 +171,7 @@ const MapComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => 
             </div>
 
             <div className={"flex gap-20 justify-center " + (!selectedPrefecture ? "h-9/10" : "")}>
+                {/* map component */}
                 <svg viewBox="0 0 1000 1000" height="100%" width="100%">
                     <title>{"Japanese Prefectures"}</title>
                     <g strokeLinejoin="round" className="svg-map">
@@ -176,38 +179,21 @@ const MapComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => 
                             {mappings.map(m => m)}
                         </g></g>
                 </svg>
-                {statistics.length > 0 &&
-                    <div className={`transition-opacity duration-500 ease-out ${industryClickedIndex ? "opacity-0" : "opacity-100"}  grid grid-cols-3 items-stretch justify-center items-center gap-2 m-5 min-w-1/2`}>
-                        {!selectedIndustry.length &&
-                            statistics.map((s, index) => <p key={index} onClick={() => {
-                                setIndustryClickedIndex(true);
-                                setTimeout(() => {
-                                    setSelectedView(s.category)
-                                    setIndustryClickedIndex(false)
-                                }, 500
-                                )
-                            }} className={"hover:cursor-pointer hover:bg-blue-700 border-white border-solid border-1 p-3 text-center"}>{s.category}</p>)}
-                        {selectedIndustry.length > 0 &&
-                            statistics.filter(c =>
-                                c.category === selectedIndustry)[0].values.map(value =>
-                                    <div onClick={() => {
-                                        setIndustryClickedIndex(true);
-                                        setTimeout(() => {
-                                            setSelectedIndustry("")
-                                            setIndustryClickedIndex(false)
-                                        }, 500
-                                        )
-                                    }} className="hover:cursor-pointer hover:bg-blue-700 border-white border-solid border-1 p-3 text-center">
-                                        <p >
-                                            {value.job.name}
-                                        </p>
-                                        <p>{value.amount * 1000}</p>
-                                    </div>)
-                        }
-                    </div>}
-            </div></div >)
+                {/* industry component */}
+                {statistics.length > 0 && <IndustryComponent
+                    setIndustryClickedIndex={setIndustryClickedIndex}
+                    industryClickedIndex={industryClickedIndex}
+                    selectedPrefecture={selectedPrefecture}
+                    setSelectedIndustry={setSelectedIndustry}
+                    selectedIndustry={selectedIndustry}
+                    statistics={statistics}
+                />}
+
+
+            </div>
+        </div >)
 
 };
 
 
-export default MapComponent;
+export default ViewComponent;
