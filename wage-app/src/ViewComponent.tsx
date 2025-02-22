@@ -3,6 +3,7 @@ import { PrefectureCategoryEntry, WageData } from "./lib/types";
 import { getByPrefecture } from "./lib/data-fetching";
 import { translatedPrefectures } from "./lib/data-translation";
 import IndustryComponent from "./IndustryComponent";
+import MapComponent from "./MapComponent";
 
 
 const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => {
@@ -169,16 +170,9 @@ const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) =>
                     View by Industry
                 </p>
             </div>
-
             <div className={"flex gap-20 justify-center " + (!selectedPrefecture ? "h-9/10" : "")}>
                 {/* map component */}
-                <svg viewBox="0 0 1000 1000" height="100%" width="100%">
-                    <title>{"Japanese Prefectures"}</title>
-                    <g strokeLinejoin="round" className="svg-map">
-                        <g fill="#EEE" stroke="#000" className="prefectures">
-                            {mappings.map(m => m)}
-                        </g></g>
-                </svg>
+                <MapComponent mappings={mappings} />
                 {/* industry component */}
                 {statistics.length > 0 && <IndustryComponent
                     setIndustryClickedIndex={setIndustryClickedIndex}
