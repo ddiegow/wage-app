@@ -11,6 +11,7 @@ const MapComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => 
     const [hoveredPrefecture, setHoveredPrefecture] = useState("");
     const [selectedIndustry, setSelectedIndustry] = useState("");
     const [industryClickedIndex, setIndustryClickedIndex] = useState(false)
+    const [selectedView, setSelectedView] = useState("prefecture")
     const handleClick = (code: string) => {
         if (!wageData) {
             console.log('No wage data');
@@ -142,10 +143,31 @@ const MapComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => 
     }, [wageData, selectedPrefecture, hoveredPrefecture]);
     return (
         <div className="h-screen">
-            <h3 className="text-center mt-5 mb-5 text-3xl">
-                {!selectedPrefecture && "Please select a prefecture"}
-                {selectedPrefecture && translatedPrefectures[Number(selectedPrefecture)].name + " Prefecture"}
-            </h3>
+            <div className="flex justify-evenly m-5">
+                <p
+                    className={
+                        "hover:cursor-pointer hover:bg-blue-700 border-solid border-1 border-color-white p-3 rounded-md "
+                        + (selectedView === "prefecture" ? "bg-blue-700" : "")
+                    }
+                    onClick={() => setSelectedView("prefecture")}
+                >
+                    View by prefecture
+                </p>
+                <h3 className=" text-3xl">
+                    {!selectedPrefecture && "Please select a prefecture"}
+                    {selectedPrefecture && translatedPrefectures[Number(selectedPrefecture)].name + " Prefecture"}
+                </h3>
+                <p
+                    className={
+                        "hover:cursor-pointer hover:bg-blue-700 border-solid border-1 border-color-white p-3 rounded-md "
+                        + (selectedView === "industry" ? "bg-blue-700" : "")
+                    }
+                    onClick={() => setSelectedView("industry")}
+                >
+                    View by Industry
+                </p>
+            </div>
+
             <div className={"flex gap-20 justify-center " + (!selectedPrefecture ? "h-9/10" : "")}>
                 <svg viewBox="0 0 1000 1000" height="100%" width="100%">
                     <title>{"Japanese Prefectures"}</title>
@@ -160,12 +182,10 @@ const MapComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => 
                             statistics.map((s, index) => <p key={index} onClick={() => {
                                 setIndustryClickedIndex(true);
                                 setTimeout(() => {
-                                    setSelectedIndustry(s.category)
+                                    setSelectedView(s.category)
                                     setIndustryClickedIndex(false)
                                 }, 500
                                 )
-                                //setSelectedIndustry(s.category)
-
                             }} className={"hover:cursor-pointer hover:bg-blue-700 border-white border-solid border-1 p-3 text-center"}>{s.category}</p>)}
                         {selectedIndustry.length > 0 &&
                             statistics.filter(c =>
@@ -177,8 +197,6 @@ const MapComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => 
                                             setIndustryClickedIndex(false)
                                         }, 500
                                         )
-                                        //setSelectedIndustry(s.category)
-
                                     }} className="hover:cursor-pointer hover:bg-blue-700 border-white border-solid border-1 p-3 text-center">
                                         <p >
                                             {value.job.name}
