@@ -171,17 +171,22 @@ const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) =>
                 </p>
             </div>
             <div className={"flex gap-20 justify-center " + (!selectedPrefecture ? "h-9/10" : "")}>
-                {/* map component */}
-                <MapComponent mappings={mappings} />
-                {/* industry component */}
-                {statistics.length > 0 && <IndustryComponent
-                    setIndustryClickedIndex={setIndustryClickedIndex}
-                    industryClickedIndex={industryClickedIndex}
-                    selectedPrefecture={selectedPrefecture}
-                    setSelectedIndustry={setSelectedIndustry}
-                    selectedIndustry={selectedIndustry}
-                    statistics={statistics}
-                />}
+                {/* view by prefecture */}
+                {selectedView === "prefecture" &&
+                    <>
+                        <MapComponent mappings={mappings} />
+                        {statistics.length > 0 && <IndustryComponent
+                            setIndustryClickedIndex={setIndustryClickedIndex}
+                            industryClickedIndex={industryClickedIndex}
+                            selectedPrefecture={selectedPrefecture}
+                            setSelectedIndustry={setSelectedIndustry}
+                            selectedIndustry={selectedIndustry}
+                            statistics={statistics}
+                        />
+                        }
+                    </>
+                }
+
 
 
             </div>
