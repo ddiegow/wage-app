@@ -45,7 +45,7 @@ const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) =>
                 setMappings(mapping)
             })
             .catch((err) => console.error("Error loading SVG:", err));
-    }, [wageData, selectedPrefecture, hoveredPrefecture]);
+    }, [selectedPrefecture, hoveredPrefecture]);
     return (
         <div className="h-screen">
             {/* top bar (buttons + title) */}
