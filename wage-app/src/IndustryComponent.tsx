@@ -1,5 +1,6 @@
 import { SetStateAction } from "react";
 import { PrefectureCategoryEntry } from "./lib/types";
+import { NumberWithCommas } from "./lib/currency";
 
 interface IndustryComponentProps {
     setIndustryClickedIndex: React.Dispatch<SetStateAction<boolean>>
@@ -45,7 +46,7 @@ const IndustryComponent =
                                 <p >
                                     {value.job.name}
                                 </p>
-                                <p>{value.amount * 1000}</p>
+                                <p>¥ {NumberWithCommas(value.amount * 1000)}</p>
                             </div>
                         )
                 }
