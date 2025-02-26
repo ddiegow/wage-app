@@ -1,11 +1,12 @@
 import { JSX, useEffect, useState } from "react";
 import { PrefectureCategoryEntry, WageData } from "./lib/types";
-import { getByPrefecture } from "./lib/data-fetching";
+import { getByJob, getByJobAndPrefecture, getByPrefecture } from "./lib/data-fetching";
 import IndustryComponent from "./IndustryComponent";
 import MapComponent from "./MapComponent";
 import MenuComponent from "./MenuComponent";
 import { translatedPrefectures } from "./lib/data-translation";
 import { GenerateMapElements } from "./lib/map-component-generation";
+import { ValueToColor } from "./lib/coloring";
 
 const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => {
     const [mappings, setMappings] = useState<(JSX.Element)[]>([])
@@ -16,7 +17,16 @@ const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) =>
     const [industryClickedIndex, setIndustryClickedIndex] = useState(false)
     const [selectedView, setSelectedView] = useState("prefecture")
     const [title, setTitle] = useState("Please select a prefecture")
-
+    const correctPrefecture = (code: string) => {
+        if (!code.length)
+            return "";
+        if (Number(code) < 10) {
+            return "0" + code + "000";
+        } else {
+            return code + "000";
+        }
+        return "";
+    }
     const handleClick = (code: string) => {
         if (!wageData) {
             console.log('No wage data');
@@ -24,13 +34,12 @@ const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) =>
         }
         setSelectedPrefecture(code)
         setTitle(translatedPrefectures[Number(code)].name);
-        if (!code.length)
+        code = correctPrefecture(code)
+        if (!code.length) {
+            console.error("INCORRECT PREFECTURE CODE")
             return;
-        if (Number(code) < 10) {
-            code = "0" + code + "000";
-        } else {
-            code = code + "000";
         }
+
         const data = getByPrefecture(wageData.GET_STATS_DATA.STATISTICAL_DATA.DATA_INF.VALUE, code);
         setStatistics(data)
     }
@@ -41,11 +50,45 @@ const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) =>
                 return res.text()
             })
             .then((data) => {
-                const mapping = GenerateMapElements(data, selectedPrefecture, hoveredPrefecture, setHoveredPrefecture, handleClick)
-                setMappings(mapping)
+                if (selectedView === "prefecture") {
+                    // and this function needs to be passed as a prop
+                    // so that we color prefectures based on parent component's needs
+                    const getFillColor = (isSelected: boolean, isHovered: boolean) => {
+                        if (isSelected) return "#ff0000";
+                        if (isHovered) return "#ff0000";
+                        return "#EEEEEE";
+                    };
+                    const mapping = GenerateMapElements(data, selectedPrefecture, hoveredPrefecture, setHoveredPrefecture, handleClick, getFillColor, null)
+                    setMappings(mapping)
+                }
+                else {
+                    if (!wageData)
+                        return;
+                    const amounts: number[] = [];
+                    const jobData = getByJob(wageData?.GET_STATS_DATA.STATISTICAL_DATA.DATA_INF.VALUE, "1073")
+                    for (const job of jobData)
+                        amounts.push(job.amount)
+                    const max = Math.max(...amounts);
+                    const min = Math.min(...amounts);
+                    const getColorCode = (prefecture: string) => {
+                        prefecture = correctPrefecture(prefecture);
+                        if (!prefecture.length) {
+                            console.error("INCORRECT PREFECTURE CODE")
+                            return ""
+                        }
+                        const data = getByJobAndPrefecture(wageData.GET_STATS_DATA.STATISTICAL_DATA.DATA_INF.VALUE, prefecture, "1073")
+                        if (!data)
+                            return "";
+                        const color = ValueToColor(min, max, data)
+                        return "hsl(" + color.toString() + ",100%, 50%)";
+                    }
+                    const mapping = GenerateMapElements(data, selectedPrefecture, hoveredPrefecture, setHoveredPrefecture, handleClick, null, getColorCode)
+                    setMappings(mapping)
+                }
+
             })
             .catch((err) => console.error("Error loading SVG:", err));
-    }, [selectedPrefecture, hoveredPrefecture]);
+    }, [selectedPrefecture, hoveredPrefecture, selectedView]);
     return (
         <div className="h-screen">
             {/* top bar (buttons + title) */}
@@ -67,6 +110,10 @@ const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) =>
                         />
                         }
                     </>
+                }
+                {
+                    selectedView === "industry" &&
+                    <MapComponent mappings={mappings} />
                 }
             </div>
         </div >

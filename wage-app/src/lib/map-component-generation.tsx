@@ -5,7 +5,11 @@ export const GenerateMapElements = (
     selectedPrefecture: string,
     hoveredPrefecture: string,
     setHoveredPrefecture: React.Dispatch<SetStateAction<string>>,
-    handleClick: (code: string) => void
+    handleClick: (code: string) => void,
+    // color setting for prefecture view mode
+    getFillColor: ((isSelected: boolean, isHovered: boolean) => string) | null,
+    // color setting for industry view mode
+    getColorCode: ((prefecture: string) => string) | null
 ) => {
     const parser = new DOMParser();
     const svgDoc = parser.parseFromString(data, "image/svg+xml");
@@ -13,14 +17,15 @@ export const GenerateMapElements = (
     const allG = Array.from(svgDoc.querySelectorAll<SVGGElement>("g.prefecture"))
     const mapping = allG.map((g: SVGGElement) => {
         const prefCode = g.getAttribute("data-code") || "";
-        const isSelected = prefCode === selectedPrefecture;
-        const isHovered = prefCode === hoveredPrefecture;
-
-        const getFillColor = () => {
-            if (isSelected) return "#ff0000";
-            if (isHovered) return "#ff0000";
-            return "#EEEEEE";
-        };
+        let color = "";
+        // depending on which mode we're in, use one filling method or another
+        if (getFillColor) {
+            color = getFillColor(prefCode === selectedPrefecture, prefCode === hoveredPrefecture)
+        } else if (getColorCode) {
+            color = getColorCode(prefCode)
+        } else { // if something went wrong, there won't be any colors
+            color = "";
+        }
         // if we're at a polygon element
         if (g.querySelectorAll<SVGPolygonElement>("polygon").length) {
             // create a new react element
@@ -50,12 +55,13 @@ export const GenerateMapElements = (
             const paths = pathDefs.map(d =>
                 <path key={d} d={d} />
             );
+
             return (
                 <g
                     transform={g.getAttribute("transform") || ""}
                     className={g.classList.toString() + " hover:cursor-pointer"}
                     strokeLinejoin="round"
-                    fill={getFillColor()}
+                    fill={color}
                     fillRule="nonzero"
                     stroke="#000000"
                     strokeWidth="1.0"
@@ -96,7 +102,7 @@ export const GenerateMapElements = (
                 <g
                     transform={g.getAttribute("transform") || ""}
                     className={g.classList.toString() + " hover:cursor-pointer"}
-                    fill={getFillColor()}
+                    fill={color}
                     stroke={g.getAttribute("stroke") || "#000000"}
                     strokeWidth={g.getAttribute("stroke-width") || "1.0"}
                     onMouseOver={() => setHoveredPrefecture(prefCode)}
