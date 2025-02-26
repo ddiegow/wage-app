@@ -11,7 +11,8 @@ const MapComponent = ({ mappings }: MapComponentProps) => {
             <g strokeLinejoin="round" className="svg-map">
                 <g fill="#EEE" stroke="#000" className="prefectures">
                     {mappings.map(m => m)}
-                </g></g>
+                </g>
+            </g>
         </svg>
     )
 }
