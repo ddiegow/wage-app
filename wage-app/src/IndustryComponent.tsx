@@ -33,22 +33,28 @@ const IndustryComponent =
                         )
                     }} className={"hover:cursor-pointer hover:bg-blue-700 border-white border-solid border-1 p-3 text-center"}>{s.category}</p>)}
                 {selectedIndustry.length > 0 &&
-                    statistics.filter(c =>
+                    [...statistics.filter(c =>
                         c.category === selectedIndustry)[0].values.map(value =>
-                            <div onClick={() => {
-                                setIndustryClickedIndex(true);
-                                setTimeout(() => {
-                                    setSelectedIndustry("")
-                                    setIndustryClickedIndex(false)
-                                }, 500
-                                )
-                            }} className="hover:cursor-pointer hover:bg-blue-700 border-white border-solid border-1 p-3 text-center">
+                            <div className="border-white border-solid border-1 p-3 text-center">
                                 <p >
                                     {value.job.name}
                                 </p>
                                 <p>¥ {NumberWithCommas(value.amount * 1000)}</p>
                             </div>
+                        ),
+                    <p className="hover:cursor-pointer" onClick={() => {
+                        setIndustryClickedIndex(true);
+                        setTimeout(() => {
+                            setSelectedIndustry("")
+                            setIndustryClickedIndex(false)
+                        }, 500
                         )
+                    }}>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
+                        </svg>
+                    </p>
+                    ]
                 }
             </div>
         )
