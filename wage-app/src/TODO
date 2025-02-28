@@ -1,3 +1,5 @@
 need to refactor prefecture hover so that it does one thing or another depending on view mode:
-    if it's in prefecture mode, normal hovering
-    if it's in industry mode, show the tooltip with the prefecture + salary
+    if it's in prefecture mode, normal hovering (done)
+    if it's in industry mode, show the tooltip with the prefecture + salary (done)
+
+check coloring
