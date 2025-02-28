@@ -7,6 +7,7 @@ import MenuComponent from "./MenuComponent";
 import { translatedIndustries, translatedJobs, translatedPrefectures } from "./lib/data-translation";
 import { GenerateMapElements } from "./lib/map-component-generation";
 import { ValueToColor } from "./lib/coloring";
+import { NumberWithCommas } from "./lib/currency";
 
 const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => {
     const [mappings, setMappings] = useState<(JSX.Element)[]>([])
@@ -66,7 +67,8 @@ const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) =>
                         if (isHovered) return "#ff0000";
                         return "#EEEEEE";
                     };
-                    const mapping = GenerateMapElements(data, selectedPrefecture, hoveredPrefecture, setHoveredPrefecture, selectedView === "prefecture" ? handleClickMap : () => { }, getFillColor, null)
+                    const tooltips = translatedPrefectures.map(p => ({ prefecture: p, tooltip: "" }))
+                    const mapping = GenerateMapElements(data, selectedPrefecture, hoveredPrefecture, setHoveredPrefecture, selectedView === "prefecture" ? handleClickMap : () => { }, getFillColor, null, tooltips)
                     setMappings(mapping)
                 }
                 else {
@@ -92,7 +94,8 @@ const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) =>
                         const color = ValueToColor(min, max, data)
                         return "hsl(" + color.toString() + ",100%, 50%)";
                     }
-                    const mapping = GenerateMapElements(data, selectedPrefecture, hoveredPrefecture, setHoveredPrefecture, selectedView === "prefecture" ? handleClickMap : () => { }, null, getColorCode)
+                    const tooltips = jobData.map(jd => ({ prefecture: jd.prefecture, tooltip: "¥ " + NumberWithCommas(jd.amount * 10000) }))
+                    const mapping = GenerateMapElements(data, selectedPrefecture, hoveredPrefecture, setHoveredPrefecture, selectedView === "prefecture" ? handleClickMap : () => { }, null, getColorCode, tooltips)
                     setMappings(mapping)
                 }
 

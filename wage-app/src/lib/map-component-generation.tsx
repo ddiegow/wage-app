@@ -9,7 +9,8 @@ export const GenerateMapElements = (
     // color setting for prefecture view mode
     getFillColor: ((isSelected: boolean, isHovered: boolean) => string) | null,
     // color setting for industry view mode
-    getColorCode: ((prefecture: string) => string) | null
+    getColorCode: ((prefecture: string) => string) | null,
+    tooltips: { prefecture: { code: string, name: string }, tooltip: string }[]
 ) => {
     const parser = new DOMParser();
     const svgDoc = parser.parseFromString(data, "image/svg+xml");
@@ -26,6 +27,12 @@ export const GenerateMapElements = (
         } else { // if something went wrong, there won't be any colors
             color = "";
         }
+        const prefectureName = g.querySelector('title')?.textContent || ""
+        const prefectureTooltip = tooltips.find(t => t.prefecture.name === prefectureName)
+        let tooltip = "";
+        if (prefectureTooltip)
+            tooltip = tooltip + prefectureTooltip.prefecture.name + (prefectureTooltip.tooltip ? " - " + prefectureTooltip.tooltip : "")
+        console.log("tooltip: ", tooltip)
         // if we're at a polygon element
         if (g.querySelectorAll<SVGPolygonElement>("polygon").length) {
             // create a new react element
@@ -70,7 +77,7 @@ export const GenerateMapElements = (
                     onMouseLeave={() => setHoveredPrefecture("")}
                     onClick={(e) => handleClick(e.currentTarget.getAttribute("data-code") || "")}
                 >
-                    <title>{g.querySelector('title')?.textContent || ""}</title>
+                    <title>{tooltip}</title>
                     {paths}
                 </g >
             );
@@ -84,7 +91,7 @@ export const GenerateMapElements = (
                     // if it's a title element
                     if (element.tagName === 'title') {
                         // create a jsx title element
-                        return <title key={`title-${index}`}>{element.textContent || ""}</title>;
+                        return <title>{tooltip}</title>;
                         // if it's a path element
                     } else if (element.tagName === 'path') {
                         // create a jsx path element
