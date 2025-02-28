@@ -4,7 +4,7 @@ import { getByJob, getByJobAndPrefecture, getByPrefecture } from "./lib/data-fet
 import IndustryComponent from "./IndustryComponent";
 import MapComponent from "./MapComponent";
 import MenuComponent from "./MenuComponent";
-import { translatedPrefectures } from "./lib/data-translation";
+import { translatedIndustries, translatedJobs, translatedPrefectures } from "./lib/data-translation";
 import { GenerateMapElements } from "./lib/map-component-generation";
 import { ValueToColor } from "./lib/coloring";
 
@@ -14,6 +14,7 @@ const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) =>
     const [selectedPrefecture, setSelectedPrefecture] = useState("");
     const [hoveredPrefecture, setHoveredPrefecture] = useState("");
     const [selectedIndustry, setSelectedIndustry] = useState("");
+    const [selectedJob, setSelectedJob] = useState("");
     const [industryClickedIndex, setIndustryClickedIndex] = useState(false)
     const [selectedView, setSelectedView] = useState("prefecture")
     const [title, setTitle] = useState("Please select a prefecture")
@@ -27,9 +28,9 @@ const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) =>
         }
         return "";
     }
-    const handleClick = (code: string) => {
+    const handleClickMap = (code: string) => {
         if (!wageData) {
-            console.log('No wage data');
+            console.error('No wage data');
             return;
         }
         setSelectedPrefecture(code)
@@ -43,7 +44,14 @@ const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) =>
         const data = getByPrefecture(wageData.GET_STATS_DATA.STATISTICAL_DATA.DATA_INF.VALUE, code);
         setStatistics(data)
     }
-
+    const reset = () => {
+        setSelectedIndustry("");
+        setSelectedJob("");
+        setSelectedPrefecture("");
+        setHoveredPrefecture("");
+        setIndustryClickedIndex(false);
+        setStatistics([]);
+    }
     useEffect(() => {
         fetch("/maps/map-full.svg")
             .then((res) => {
@@ -58,14 +66,16 @@ const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) =>
                         if (isHovered) return "#ff0000";
                         return "#EEEEEE";
                     };
-                    const mapping = GenerateMapElements(data, selectedPrefecture, hoveredPrefecture, setHoveredPrefecture, handleClick, getFillColor, null)
+                    const mapping = GenerateMapElements(data, selectedPrefecture, hoveredPrefecture, setHoveredPrefecture, selectedView === "prefecture" ? handleClickMap : () => { }, getFillColor, null)
                     setMappings(mapping)
                 }
                 else {
                     if (!wageData)
                         return;
                     const amounts: number[] = [];
-                    const jobData = getByJob(wageData?.GET_STATS_DATA.STATISTICAL_DATA.DATA_INF.VALUE, "1073")
+                    if (!selectedJob.length)
+                        return;
+                    const jobData = getByJob(wageData?.GET_STATS_DATA.STATISTICAL_DATA.DATA_INF.VALUE, selectedJob)
                     for (const job of jobData)
                         amounts.push(job.amount)
                     const max = Math.max(...amounts);
@@ -82,18 +92,18 @@ const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) =>
                         const color = ValueToColor(min, max, data)
                         return "hsl(" + color.toString() + ",100%, 50%)";
                     }
-                    const mapping = GenerateMapElements(data, selectedPrefecture, hoveredPrefecture, setHoveredPrefecture, handleClick, null, getColorCode)
+                    const mapping = GenerateMapElements(data, selectedPrefecture, hoveredPrefecture, setHoveredPrefecture, selectedView === "prefecture" ? handleClickMap : () => { }, null, getColorCode)
                     setMappings(mapping)
                 }
 
             })
             .catch((err) => console.error("Error loading SVG:", err));
-    }, [selectedPrefecture, hoveredPrefecture, selectedView]);
+    }, [selectedJob, selectedPrefecture, hoveredPrefecture, selectedView]);
     return (
         <div className="h-screen">
             {/* top bar (buttons + title) */}
             <div className="flex justify-evenly m-5">
-                <MenuComponent selectedView={selectedView} setSelectedView={setSelectedView} title={title}></MenuComponent>
+                <MenuComponent reset={reset} selectedView={selectedView} setSelectedView={setSelectedView} title={title}></MenuComponent>
             </div>
             <div className={"flex gap-20 justify-center " + (!selectedPrefecture ? "h-9/10" : "")}>
                 {/* view by prefecture */}
@@ -104,16 +114,34 @@ const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) =>
                             setIndustryClickedIndex={setIndustryClickedIndex}
                             industryClickedIndex={industryClickedIndex}
                             selectedPrefecture={selectedPrefecture}
-                            setSelectedIndustry={setSelectedIndustry}
                             selectedIndustry={selectedIndustry}
                             statistics={statistics}
+                            onJobClick={null}
+                            onIndustryClick={(selectedIndustry: string) => setSelectedIndustry(selectedIndustry)}
+                            industryList={selectedIndustry ? [] : translatedIndustries}
+                            jobList={selectedIndustry ? translatedJobs[selectedIndustry] : []}
                         />
                         }
                     </>
                 }
                 {
                     selectedView === "industry" &&
-                    <MapComponent mappings={mappings} />
+                    <>
+                        {<IndustryComponent
+                            setIndustryClickedIndex={setIndustryClickedIndex}
+                            industryClickedIndex={industryClickedIndex}
+                            selectedPrefecture={selectedPrefecture}
+                            selectedIndustry={selectedIndustry}
+                            statistics={statistics}
+                            onJobClick={(selectedJob: string) => setSelectedJob(selectedJob)}
+                            onIndustryClick={(selectedIndustry: string) => setSelectedIndustry(selectedIndustry)}
+                            industryList={selectedIndustry ? [] : translatedIndustries}
+                            jobList={selectedIndustry ? translatedJobs[selectedIndustry] : []}
+                        />
+                        }
+                        <MapComponent mappings={mappings} />
+                    </>
+
                 }
             </div>
         </div >

@@ -1,5 +1,15 @@
 import { IndustryJobs } from "./types"
-
+export const translatedIndustries = [
+  "Management & Business",
+  "Engineering & Technology",
+  "Healthcare & Medical",
+  "Education & Research",
+  "Arts & Media",
+  "Office & Administrative Support",
+  "Retail & Sales",
+  "Security & Law Enforcement",
+  "Manufacturing & Industrial"
+]
 export const translatedJobs: IndustryJobs = {
   "Management & Business": [
     { "code": "1031", "name": "Management Occupation Worker" },
