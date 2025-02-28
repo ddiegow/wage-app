@@ -29,27 +29,27 @@ const IndustryComponent =
     ) => {
         return (
             <div className={`transition-opacity duration-500 ease-out ${industryClickedIndex ? "opacity-0" : "opacity-100"}  grid grid-cols-3 items-stretch justify-center items-center gap-2 m-5 min-w-1/2`}>
-                {
-                    industryList.map((industry, index) => <p key={index} onClick={() => {
-                        setIndustryClickedIndex(true);
-                        setTimeout(() => {
-                            console.log("setting industry to ", industry)
-                            onIndustryClick(industry)
-                            setIndustryClickedIndex(false)
-                        }, 500
-                        )
-                    }} className={"hover:cursor-pointer hover:bg-blue-700 border-white border-solid border-1 p-3 text-center"}
-                    >
-                        {industry}
-                    </p>
+                {!selectedIndustry &&
+                    industryList.map((industry, index) =>
+                        <p key={index} onClick={() => {
+                            setIndustryClickedIndex(true);
+                            setTimeout(() => {
+                                onIndustryClick(industry)
+                                setIndustryClickedIndex(false)
+                            }, 500
+                            )
+                        }} className={"hover:cursor-pointer hover:bg-blue-700 border-white border-solid border-1 p-3 text-center"}
+                        >
+                            {industry}
+                        </p>
                     )
                 }
 
-                {
+                {selectedIndustry &&
                     <>
                         {
-                            jobList.map(job => (
-                                <div onClick={onJobClick ? () => onJobClick(job.code) : () => { }} className={`border-white border-solid border-1 p-3 text-center ${onJobClick ? "hover:cursor-pointer" : ""}`}>
+                            jobList.map((job, index) => (
+                                <div key={index} onClick={onJobClick ? () => onJobClick(job.code) : () => { }} className={`border-white border-solid border-1 p-3 text-center ${onJobClick ? "hover:cursor-pointer" : ""}`}>
                                     <p >
                                         {job.name}
                                     </p>

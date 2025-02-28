@@ -19,6 +19,7 @@ const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) =>
     const [industryClickedIndex, setIndustryClickedIndex] = useState(false)
     const [selectedView, setSelectedView] = useState("prefecture")
     const [title, setTitle] = useState("Please select a prefecture")
+    const [mapData, setMapData] = useState("")
     const correctPrefecture = (code: string) => {
         if (!code.length)
             return "";
@@ -53,60 +54,83 @@ const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) =>
         setIndustryClickedIndex(false);
         setStatistics([]);
     }
+    // on first load we fetch the map data and, because we start in prefecture mode, render an empty map
     useEffect(() => {
         fetch("/maps/map-full.svg")
             .then((res) => {
+                if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+                const contentType = res.headers.get("Content-Type");
+                if (!contentType || !contentType.includes("image/svg+xml")) {
+                    throw new Error(`Unexpected content type: ${contentType}`);
+                }
                 return res.text()
             })
             .then((data) => {
-                if (selectedView === "prefecture") {
-                    // and this function needs to be passed as a prop
-                    // so that we color prefectures based on parent component's needs
-                    const getFillColor = (isSelected: boolean, isHovered: boolean) => {
-                        if (isSelected) return "#ff0000";
-                        if (isHovered) return "#ff0000";
-                        return "#EEEEEE";
-                    };
-                    const tooltips = translatedPrefectures.map(p => ({ prefecture: p, tooltip: "" }))
-                    const mapping = GenerateMapElements(data, selectedPrefecture, hoveredPrefecture, setHoveredPrefecture, selectedView === "prefecture" ? handleClickMap : () => { }, getFillColor, null, tooltips)
-                    setMappings(mapping)
-                }
-                else {
-                    if (!wageData)
-                        return;
-                    const amounts: number[] = [];
-                    if (!selectedJob.length)
-                        return;
-                    const jobData = getByJob(wageData?.GET_STATS_DATA.STATISTICAL_DATA.DATA_INF.VALUE, selectedJob)
-                    console.log("jobData: ", jobData)
-                    for (const job of jobData)
-                        amounts.push(job.amount)
-                    const max = Math.max(...amounts);
-                    const min = Math.min(...amounts);
-                    console.log("amounts: ", ...amounts)
-                    console.log("max is declared as " + max + " and min is declared as " + min)
-                    const getColorCode = (prefecture: string) => {
-                        prefecture = correctPrefecture(prefecture);
-                        if (!prefecture.length) {
-                            console.error("INCORRECT PREFECTURE CODE")
-                            return ""
-                        }
-                        const data = getByJobAndPrefecture(wageData.GET_STATS_DATA.STATISTICAL_DATA.DATA_INF.VALUE, prefecture, selectedJob)
-                        if (!data)
-                            return "";
-                        const color = ValueToColor(min, max, data)
-                        console.log("min:", min, ", max: ", max)
-                        console.log("color with data " + data + " for prefecture " + prefecture + ": hsl(" + color.toString() + ",100%, 50%)")
-                        return "hsl(" + color.toString() + ",100%, 50%)";
-                    }
-                    const tooltips = jobData.map(jd => ({ prefecture: jd.prefecture, tooltip: "¥ " + NumberWithCommas(jd.amount * 10000) }))
-                    const mapping = GenerateMapElements(data, selectedPrefecture, hoveredPrefecture, setHoveredPrefecture, selectedView === "prefecture" ? handleClickMap : () => { }, null, getColorCode, tooltips)
-                    setMappings(mapping)
-                }
-
+                setMapData(data)
+                // filling function according to selection or hover state
+                const getFillColor = (isSelected: boolean, isHovered: boolean) => {
+                    if (isSelected) return "#ff0000";
+                    if (isHovered) return "#ff0000";
+                    return "#EEEEEE";
+                };
+                // generate simple tooltips with prefecture names
+                const tooltips = translatedPrefectures.map(p => ({ prefecture: p, tooltip: "" }))
+                // generate the prefecture svg component map elements
+                const mapping = GenerateMapElements(data, selectedPrefecture, hoveredPrefecture, setHoveredPrefecture, selectedView === "prefecture" ? handleClickMap : () => { }, getFillColor, null, tooltips)
+                // set the state
+                setMappings(mapping ? mapping : [])
             })
             .catch((err) => console.error("Error loading SVG:", err));
+    }, [])
+
+    useEffect(() => {
+        if (selectedView === "prefecture") {
+            // filling function according to selection or hover state
+            const getFillColor = (isSelected: boolean, isHovered: boolean) => {
+                if (isSelected) return "#ff0000";
+                if (isHovered) return "#ff0000";
+                return "#EEEEEE";
+            };
+            // generate simple tooltips with prefecture names
+            const tooltips = translatedPrefectures.map(p => ({ prefecture: p, tooltip: "" }))
+            // generate the prefecture svg component map elements
+            const mapping = GenerateMapElements(mapData, selectedPrefecture, hoveredPrefecture, setHoveredPrefecture, selectedView === "prefecture" ? handleClickMap : () => { }, getFillColor, null, tooltips)
+            // set the state
+            setMappings(mapping ? mapping : [])
+        }
+        else {
+            if (!wageData)
+                return;
+            const amounts: number[] = [];
+            const jobData = getByJob(wageData?.GET_STATS_DATA.STATISTICAL_DATA.DATA_INF.VALUE, selectedJob)
+            for (const job of jobData)
+                amounts.push(job.amount)
+            const max = Math.max(...amounts);
+            const min = Math.min(...amounts);
+            const getColorCode = (prefecture: string) => {
+                prefecture = correctPrefecture(prefecture);
+                if (!prefecture.length) {
+                    console.error("INCORRECT PREFECTURE CODE")
+                    return ""
+                }
+                const data = getByJobAndPrefecture(wageData.GET_STATS_DATA.STATISTICAL_DATA.DATA_INF.VALUE, prefecture, selectedJob)
+                if (!data)
+                    return "";
+                const color = ValueToColor(min, max, data)
+                return "hsl(" + color.toString() + ",100%, 50%)";
+            }
+            const tooltips = jobData.map(jd => ({ prefecture: jd.prefecture, tooltip: "¥ " + NumberWithCommas(jd.amount * 10000) }))
+            const mapping = GenerateMapElements(mapData, selectedPrefecture, hoveredPrefecture, setHoveredPrefecture, selectedView === "prefecture" ? handleClickMap : () => { }, null, getColorCode, tooltips)
+            setMappings(mapping ? mapping : [])
+        }
     }, [selectedJob, selectedPrefecture, hoveredPrefecture, selectedView]);
+
+    useEffect(() => {
+        if (selectedView === "prefecture")
+            setTitle("Please select a prefecture")
+        else
+            setTitle("Please select a job")
+    }, [selectedView])
     return (
         <div className="h-screen">
             {/* top bar (buttons + title) */}
@@ -141,7 +165,11 @@ const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) =>
                             selectedPrefecture={selectedPrefecture}
                             selectedIndustry={selectedIndustry}
                             statistics={statistics}
-                            onJobClick={(selectedJob: string) => setSelectedJob(selectedJob)}
+                            onJobClick={(selectedJob: string) => {
+                                setSelectedJob(selectedJob)
+                                const job = translatedJobs[selectedIndustry].filter(j => j.code === selectedJob)[0]
+                                setTitle(job ? job.name : "Please select a job")
+                            }}
                             onIndustryClick={(selectedIndustry: string) => setSelectedIndustry(selectedIndustry)}
                             industryList={selectedIndustry ? [] : translatedIndustries}
                             jobList={selectedIndustry ? translatedJobs[selectedIndustry] : []}

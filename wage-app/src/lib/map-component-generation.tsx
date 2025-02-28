@@ -1,4 +1,5 @@
 import { SetStateAction } from "react";
+import { v4 as uuidv4 } from 'uuid';
 
 export const GenerateMapElements = (
     data: string,
@@ -12,9 +13,11 @@ export const GenerateMapElements = (
     getColorCode: ((prefecture: string) => string) | null,
     tooltips: { prefecture: { code: string, name: string }, tooltip: string }[]
 ) => {
+    // we're still fetching the data or something has gone wrong
+    if (!data.length)
+        return;
     const parser = new DOMParser();
     const svgDoc = parser.parseFromString(data, "image/svg+xml");
-
     const allG = Array.from(svgDoc.querySelectorAll<SVGGElement>("g.prefecture"))
     const mapping = allG.map((g: SVGGElement) => {
         const prefCode = g.getAttribute("data-code") || "";
@@ -59,11 +62,12 @@ export const GenerateMapElements = (
 
             // create new path elements
             const paths = pathDefs.map(d =>
-                <path key={d} d={d} />
+                <path key={uuidv4()} d={d} />
             );
 
             return (
                 <g
+                    key={uuidv4()}
                     transform={g.getAttribute("transform") || ""}
                     className={g.classList.toString() + " hover:cursor-pointer"}
                     strokeLinejoin="round"
@@ -83,20 +87,20 @@ export const GenerateMapElements = (
         } else {
             // no polygons, create a new react element
             // and keep the original children
-            const children = Array.from(g.childNodes).map((child, index) => {
+            const children = Array.from(g.childNodes).map((child) => {
                 if (child.nodeType === Node.ELEMENT_NODE) {
                     // create a jsx element for each child element
                     const element = child as Element;
                     // if it's a title element
                     if (element.tagName === 'title') {
                         // create a jsx title element
-                        return <title>{tooltip}</title>;
+                        return <title key={uuidv4()}>{tooltip}</title>;
                         // if it's a path element
                     } else if (element.tagName === 'path') {
                         // create a jsx path element
                         const pathElement = element as SVGPathElement;
                         return <path
-                            key={`path-${index}`}
+                            key={uuidv4()}
                             d={pathElement.getAttribute('d') || ""}
                         />;
                     }
@@ -106,6 +110,7 @@ export const GenerateMapElements = (
             });
             return (
                 <g
+                    key={uuidv4()}
                     transform={g.getAttribute("transform") || ""}
                     className={g.classList.toString() + " hover:cursor-pointer"}
                     fill={color}
