@@ -78,20 +78,25 @@ const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) =>
                     if (!selectedJob.length)
                         return;
                     const jobData = getByJob(wageData?.GET_STATS_DATA.STATISTICAL_DATA.DATA_INF.VALUE, selectedJob)
+                    console.log("jobData: ", jobData)
                     for (const job of jobData)
                         amounts.push(job.amount)
                     const max = Math.max(...amounts);
                     const min = Math.min(...amounts);
+                    console.log("amounts: ", ...amounts)
+                    console.log("max is declared as " + max + " and min is declared as " + min)
                     const getColorCode = (prefecture: string) => {
                         prefecture = correctPrefecture(prefecture);
                         if (!prefecture.length) {
                             console.error("INCORRECT PREFECTURE CODE")
                             return ""
                         }
-                        const data = getByJobAndPrefecture(wageData.GET_STATS_DATA.STATISTICAL_DATA.DATA_INF.VALUE, prefecture, "1073")
+                        const data = getByJobAndPrefecture(wageData.GET_STATS_DATA.STATISTICAL_DATA.DATA_INF.VALUE, prefecture, selectedJob)
                         if (!data)
                             return "";
                         const color = ValueToColor(min, max, data)
+                        console.log("min:", min, ", max: ", max)
+                        console.log("color with data " + data + " for prefecture " + prefecture + ": hsl(" + color.toString() + ",100%, 50%)")
                         return "hsl(" + color.toString() + ",100%, 50%)";
                     }
                     const tooltips = jobData.map(jd => ({ prefecture: jd.prefecture, tooltip: "¥ " + NumberWithCommas(jd.amount * 10000) }))

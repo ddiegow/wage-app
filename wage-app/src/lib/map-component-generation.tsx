@@ -32,7 +32,6 @@ export const GenerateMapElements = (
         let tooltip = "";
         if (prefectureTooltip)
             tooltip = tooltip + prefectureTooltip.prefecture.name + (prefectureTooltip.tooltip ? " - " + prefectureTooltip.tooltip : "")
-        console.log("tooltip: ", tooltip)
         // if we're at a polygon element
         if (g.querySelectorAll<SVGPolygonElement>("polygon").length) {
             // create a new react element
