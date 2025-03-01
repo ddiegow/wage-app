@@ -4,7 +4,7 @@ import { getByJob, getByJobAndPrefecture, getByPrefecture } from "./lib/data-fet
 import IndustryComponent from "./IndustryComponent";
 import MapComponent from "./MapComponent";
 import MenuComponent from "./MenuComponent";
-import { translatedIndustries, translatedJobs, translatedPrefectures } from "./lib/data-translation";
+import { translatedJobs, translatedPrefectures } from "./lib/data-translation";
 import { GenerateMapElements } from "./lib/map-component-generation";
 import { ValueToColor } from "./lib/coloring";
 import { NumberWithCommas } from "./lib/currency";
@@ -155,9 +155,7 @@ const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) =>
                             statistics={statistics}
                             onJobClick={null}
                             onIndustryClick={(selectedIndustry: string) => setSelectedIndustry(selectedIndustry)}
-                            industryList={selectedIndustry ? [] : translatedIndustries}
                             selectedJob=""
-                            jobList={selectedIndustry ? translatedJobs[selectedIndustry] : []}
                         />
                         }
                     </>
@@ -175,9 +173,7 @@ const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) =>
                                 setTitle(job ? job.name : "Please select a job")
                             }}
                             onIndustryClick={(selectedIndustry: string) => setSelectedIndustry(selectedIndustry)}
-                            industryList={selectedIndustry ? [] : translatedIndustries}
                             selectedJob={selectedJob}
-                            jobList={selectedIndustry ? translatedJobs[selectedIndustry] : []}
                         />
                         }
                         <MapComponent mappings={mappings} />

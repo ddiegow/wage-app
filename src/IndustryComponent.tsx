@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Job, PrefectureCategoryEntry } from "./lib/types";
 import { NumberWithCommas } from "./lib/currency";
+import { translatedIndustries, translatedJobs } from "./lib/data-translation";
 
 interface IndustryComponentProps {
     selectedPrefecture: string,
@@ -8,25 +9,27 @@ interface IndustryComponentProps {
     statistics: PrefectureCategoryEntry[]
     onIndustryClick: (selectedIndustry: string) => void
     onJobClick: ((selectedJob: string) => void) | null
-    industryList: string[]
     selectedJob: string
-    jobList: Job[]
 }
 
 const IndustryComponent =
     (
         {
             selectedIndustry,
+            selectedJob,
             statistics,
             onIndustryClick,
             onJobClick,
-            industryList,
-            selectedJob,
-            jobList
         }: IndustryComponentProps
     ) => {
-
+        // state used to assist in fade effect
         const [fadeToggle, setFadeToggle] = useState(false);
+        /**
+         * look for the job's statistical data in the statistics passed as a prop
+         * 
+         * @param job the job we want to find the data for
+         * @returns the amount of yearly income that corresponds to that job or "No data" if data is not available for that job
+         */
         const getAmountsFromStatistics = (job: Job) => {
             // fetch job data in statistics
             const data = statistics.find(s => s.category === selectedIndustry)?.values.find(v => v.job.name === job.name)
@@ -39,7 +42,7 @@ const IndustryComponent =
         return (
             <div className={`transition-opacity duration-500 ease-out ${fadeToggle ? "opacity-0" : "opacity-100"}  grid grid-cols-3 items-stretch justify-center items-center gap-2 m-5 min-w-1/2`}>
                 {!selectedIndustry &&
-                    industryList.map((industry, index) =>
+                    translatedIndustries.map((industry, index) =>
                         <p key={index} onClick={() => {
                             setFadeToggle(true);
                             setTimeout(() => {
@@ -57,7 +60,7 @@ const IndustryComponent =
                 {selectedIndustry &&
                     <>
                         {
-                            jobList.map((job, index) => (
+                            translatedJobs[selectedIndustry].map((job, index) => (
                                 <div key={index} onClick={onJobClick ? () => onJobClick(job.code) : () => { }} className={`border-white border-solid border-1 p-3 text-center ${onJobClick ? "hover:cursor-pointer hover:bg-blue-700" : ""} ${job.code === selectedJob ? " bg-blue-700" : ""}`}>
                                     <p >
                                         {job.name}
