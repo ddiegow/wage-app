@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Job, PrefectureCategoryEntry } from "./lib/types";
 import { NumberWithCommas } from "./lib/currency";
-import { translatedIndustries, translatedJobs } from "./lib/data-translation";
-import { v4 as uuidv4 } from "uuid";
+import IndustrySlotsComponent from "./IndustrySlotsComponent";
+import JobSlotsComponent from "./JobSlotsComponent";
 
 interface IndustryComponentProps {
-    selectedPrefecture: string,
+    selectedPrefecture: string
     selectedIndustry: string
     statistics: PrefectureCategoryEntry[]
     onIndustryClick: (selectedIndustry: string) => void
@@ -25,6 +25,7 @@ const IndustryComponent =
     ) => {
         // state used to assist in fade effect
         const [fadeToggle, setFadeToggle] = useState(false);
+        const toggleFade = () => setFadeToggle(prev => !prev)
         /**
          * look for the job's statistical data in the statistics passed as a prop
          * 
@@ -42,48 +43,23 @@ const IndustryComponent =
         }
         return (
             <div className={`transition-opacity duration-500 ease-out ${fadeToggle ? "opacity-0" : "opacity-100"}  grid grid-cols-3 items-stretch justify-center items-center gap-2 m-5 min-w-1/2`}>
-                {!selectedIndustry &&
-                    translatedIndustries.map((industry) =>
-                        <p key={uuidv4()} onClick={() => {
-                            setFadeToggle(true);
-                            setTimeout(() => {
-                                onIndustryClick(industry)
-                                setFadeToggle(false)
-                            }, 500
-                            )
-                        }} className={"hover:cursor-pointer hover:bg-blue-700 border-white border-solid border-1 p-3 text-center"}
-                        >
-                            {industry}
-                        </p>
-                    )
+                {/* Grid with the available industry choices */}
+                {!selectedIndustry && (
+                    <IndustrySlotsComponent
+                        toggleFade={toggleFade}
+                        onIndustryClick={onIndustryClick}
+                    />)
                 }
-
+                {/* Grid with the available job choices according to selected industry */}
                 {selectedIndustry &&
-                    <>
-                        {
-                            translatedJobs[selectedIndustry].map((job) => (
-                                <div key={uuidv4()} onClick={onJobClick ? () => onJobClick(job.code) : () => { }} className={`border-white border-solid border-1 p-3 text-center ${onJobClick ? "hover:cursor-pointer hover:bg-blue-700" : ""} ${job.code === selectedJob ? " bg-blue-700" : ""}`}>
-                                    <p >
-                                        {job.name}
-                                    </p>
-                                    {!onJobClick ? <p>{getAmountsFromStatistics(job)}</p> : null}
-                                </div>
-                            ))
-                        }
-                        <p className="hover:cursor-pointer" onClick={() => {
-                            setFadeToggle(true);
-                            setTimeout(() => {
-                                onIndustryClick("");
-                                if (onJobClick)
-                                    onJobClick("");
-                                setFadeToggle(false)
-                            }, 500)
-                        }}>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
-                            </svg>
-                        </p>
-                    </>
+                    <JobSlotsComponent
+                        selectedIndustry={selectedIndustry}
+                        selectedJob={selectedJob}
+                        toggleFade={toggleFade}
+                        onIndustryClick={onIndustryClick}
+                        onJobClick={onJobClick}
+                        getAmountsFromStatistics={getAmountsFromStatistics}
+                    />
                 }
             </div >
         )
