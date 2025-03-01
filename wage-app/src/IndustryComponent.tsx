@@ -60,7 +60,7 @@ const IndustryComponent =
                     <>
                         {
                             jobList.map((job, index) => (
-                                <div key={index} onClick={onJobClick ? () => onJobClick(job.code) : () => { }} className={`border-white border-solid border-1 p-3 text-center ${onJobClick ? "hover:cursor-pointer" : ""} ${job.code === selectedJob ? " bg-blue-700" : ""}`}>
+                                <div key={index} onClick={onJobClick ? () => onJobClick(job.code) : () => { }} className={`border-white border-solid border-1 p-3 text-center ${onJobClick ? "hover:cursor-pointer hover:bg-blue-700" : ""} ${job.code === selectedJob ? " bg-blue-700" : ""}`}>
                                     <p >
                                         {job.name}
                                     </p>

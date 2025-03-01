@@ -119,7 +119,16 @@ const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) =>
                 const color = ValueToColor(min, max, data)
                 return "hsl(" + color.toString() + ",100%, 50%)";
             }
-            const tooltips = jobData.map(jd => ({ prefecture: jd.prefecture, tooltip: "¥ " + NumberWithCommas(jd.amount * 1000) }))
+            //const tooltips = jobData.map(jd => ({ prefecture: jd.prefecture, tooltip: "¥ " + NumberWithCommas(jd.amount * 1000) }))
+            const tooltips = translatedPrefectures.map(p => {
+                const data = jobData.find(jd => jd.prefecture.code === p.code)
+                let tooltip = ""
+                if (data)
+                    tooltip = "¥ " + NumberWithCommas(data.amount * 1000)
+                else
+                    tooltip = "NO DATA"
+                return { prefecture: p, tooltip: tooltip }
+            })
             const mapping = GenerateMapElements(mapData, selectedPrefecture, hoveredPrefecture, setHoveredPrefecture, selectedView === "prefecture" ? handleClickMap : () => { }, null, getColorCode, tooltips)
             setMappings(mapping ? mapping : [])
         }
@@ -134,7 +143,7 @@ const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) =>
     return (
         <div className="h-screen">
             {/* top bar (buttons + title) */}
-            <div className="flex justify-evenly m-5">
+            <div className="flex justify-between m-5">
                 <MenuComponent reset={reset} selectedView={selectedView} setSelectedView={setSelectedView} title={title}></MenuComponent>
             </div>
             <div className={"flex gap-20 justify-center " + (!selectedPrefecture ? "h-9/10" : "")}>
