@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Job, PrefectureCategoryEntry } from "./lib/types";
 import { NumberWithCommas } from "./lib/currency";
 import { translatedIndustries, translatedJobs } from "./lib/data-translation";
+import { v4 as uuidv4 } from "uuid";
 
 interface IndustryComponentProps {
     selectedPrefecture: string,
@@ -42,8 +43,8 @@ const IndustryComponent =
         return (
             <div className={`transition-opacity duration-500 ease-out ${fadeToggle ? "opacity-0" : "opacity-100"}  grid grid-cols-3 items-stretch justify-center items-center gap-2 m-5 min-w-1/2`}>
                 {!selectedIndustry &&
-                    translatedIndustries.map((industry, index) =>
-                        <p key={index} onClick={() => {
+                    translatedIndustries.map((industry) =>
+                        <p key={uuidv4()} onClick={() => {
                             setFadeToggle(true);
                             setTimeout(() => {
                                 onIndustryClick(industry)
@@ -60,8 +61,8 @@ const IndustryComponent =
                 {selectedIndustry &&
                     <>
                         {
-                            translatedJobs[selectedIndustry].map((job, index) => (
-                                <div key={index} onClick={onJobClick ? () => onJobClick(job.code) : () => { }} className={`border-white border-solid border-1 p-3 text-center ${onJobClick ? "hover:cursor-pointer hover:bg-blue-700" : ""} ${job.code === selectedJob ? " bg-blue-700" : ""}`}>
+                            translatedJobs[selectedIndustry].map((job) => (
+                                <div key={uuidv4()} onClick={onJobClick ? () => onJobClick(job.code) : () => { }} className={`border-white border-solid border-1 p-3 text-center ${onJobClick ? "hover:cursor-pointer hover:bg-blue-700" : ""} ${job.code === selectedJob ? " bg-blue-700" : ""}`}>
                                     <p >
                                         {job.name}
                                     </p>
