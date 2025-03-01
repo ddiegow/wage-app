@@ -16,7 +16,6 @@ const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) =>
     const [hoveredPrefecture, setHoveredPrefecture] = useState("");
     const [selectedIndustry, setSelectedIndustry] = useState("");
     const [selectedJob, setSelectedJob] = useState("");
-    const [industryClickedIndex, setIndustryClickedIndex] = useState(false)
     const [selectedView, setSelectedView] = useState("prefecture")
     const [title, setTitle] = useState("Please select a prefecture")
     const [mapData, setMapData] = useState("")
@@ -51,7 +50,6 @@ const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) =>
         setSelectedJob("");
         setSelectedPrefecture("");
         setHoveredPrefecture("");
-        setIndustryClickedIndex(false);
         setStatistics([]);
     }
     // on first load we fetch the map data and, because we start in prefecture mode, render an empty map
@@ -152,8 +150,6 @@ const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) =>
                     <>
                         <MapComponent mappings={mappings} />
                         {statistics.length > 0 && <IndustryComponent
-                            setIndustryClickedIndex={setIndustryClickedIndex}
-                            industryClickedIndex={industryClickedIndex}
                             selectedPrefecture={selectedPrefecture}
                             selectedIndustry={selectedIndustry}
                             statistics={statistics}
@@ -170,8 +166,6 @@ const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) =>
                     selectedView === "industry" &&
                     <>
                         {<IndustryComponent
-                            setIndustryClickedIndex={setIndustryClickedIndex}
-                            industryClickedIndex={industryClickedIndex}
                             selectedPrefecture={selectedPrefecture}
                             selectedIndustry={selectedIndustry}
                             statistics={statistics}

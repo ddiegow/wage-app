@@ -1,10 +1,8 @@
-import { SetStateAction } from "react";
+import { useState } from "react";
 import { Job, PrefectureCategoryEntry } from "./lib/types";
 import { NumberWithCommas } from "./lib/currency";
 
 interface IndustryComponentProps {
-    setIndustryClickedIndex: React.Dispatch<SetStateAction<boolean>>
-    industryClickedIndex: boolean
     selectedPrefecture: string,
     selectedIndustry: string
     statistics: PrefectureCategoryEntry[]
@@ -18,8 +16,6 @@ interface IndustryComponentProps {
 const IndustryComponent =
     (
         {
-            setIndustryClickedIndex,
-            industryClickedIndex,
             selectedIndustry,
             statistics,
             onIndustryClick,
@@ -29,6 +25,8 @@ const IndustryComponent =
             jobList
         }: IndustryComponentProps
     ) => {
+
+        const [fadeToggle, setFadeToggle] = useState(false);
         const getAmountsFromStatistics = (job: Job) => {
             // fetch job data in statistics
             const data = statistics.find(s => s.category === selectedIndustry)?.values.find(v => v.job.name === job.name)
@@ -39,14 +37,14 @@ const IndustryComponent =
             return "¥ " + NumberWithCommas(data.amount * 1000)
         }
         return (
-            <div className={`transition-opacity duration-500 ease-out ${industryClickedIndex ? "opacity-0" : "opacity-100"}  grid grid-cols-3 items-stretch justify-center items-center gap-2 m-5 min-w-1/2`}>
+            <div className={`transition-opacity duration-500 ease-out ${fadeToggle ? "opacity-0" : "opacity-100"}  grid grid-cols-3 items-stretch justify-center items-center gap-2 m-5 min-w-1/2`}>
                 {!selectedIndustry &&
                     industryList.map((industry, index) =>
                         <p key={index} onClick={() => {
-                            setIndustryClickedIndex(true);
+                            setFadeToggle(true);
                             setTimeout(() => {
                                 onIndustryClick(industry)
-                                setIndustryClickedIndex(false)
+                                setFadeToggle(false)
                             }, 500
                             )
                         }} className={"hover:cursor-pointer hover:bg-blue-700 border-white border-solid border-1 p-3 text-center"}
@@ -69,12 +67,12 @@ const IndustryComponent =
                             ))
                         }
                         <p className="hover:cursor-pointer" onClick={() => {
-                            setIndustryClickedIndex(true);
+                            setFadeToggle(true);
                             setTimeout(() => {
                                 onIndustryClick("");
                                 if (onJobClick)
                                     onJobClick("");
-                                setIndustryClickedIndex(false)
+                                setFadeToggle(false)
                             }, 500)
                         }}>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
