@@ -5,7 +5,12 @@ need to refactor prefecture hover so that it does one thing or another depending
 check coloring (done)
 
 - clean up states and code in general
-- check resetting map colors when going back to industries panel in view industry mode
+- check resetting map colors when going back to industries panel in view industry mode (DONE)
 - check if there's any way to refactor the main useEffect so it doesn't repeat everything on every single
   state change (for example, when hoveredPrefecture changes, only updated the hovered prefecture,
   not the whole map, and that doesn't need to be done when all the other states change)
+
+  BUGS
+
+  - some industry selections in "prefecture mode" break down the app (probably no data) (FIXED)
+  - amounts shown in colored map tooltips are wrong by factor of 10 (FIXED)

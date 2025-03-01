@@ -11,6 +11,7 @@ interface IndustryComponentProps {
     onIndustryClick: (selectedIndustry: string) => void
     onJobClick: ((selectedJob: string) => void) | null
     industryList: string[]
+    selectedJob: string
     jobList: Job[]
 }
 
@@ -24,9 +25,19 @@ const IndustryComponent =
             onIndustryClick,
             onJobClick,
             industryList,
+            selectedJob,
             jobList
         }: IndustryComponentProps
     ) => {
+        const getAmountsFromStatistics = (job: Job) => {
+            // fetch job data in statistics
+            const data = statistics.find(s => s.category === selectedIndustry)?.values.find(v => v.job.name === job.name)
+            // if there's no data for that job, let the user know
+            if (!data)
+                return "No data"
+            // we found the data so format it and send it back
+            return "¥ " + NumberWithCommas(data.amount * 1000)
+        }
         return (
             <div className={`transition-opacity duration-500 ease-out ${industryClickedIndex ? "opacity-0" : "opacity-100"}  grid grid-cols-3 items-stretch justify-center items-center gap-2 m-5 min-w-1/2`}>
                 {!selectedIndustry &&
@@ -49,11 +60,11 @@ const IndustryComponent =
                     <>
                         {
                             jobList.map((job, index) => (
-                                <div key={index} onClick={onJobClick ? () => onJobClick(job.code) : () => { }} className={`border-white border-solid border-1 p-3 text-center ${onJobClick ? "hover:cursor-pointer" : ""}`}>
+                                <div key={index} onClick={onJobClick ? () => onJobClick(job.code) : () => { }} className={`border-white border-solid border-1 p-3 text-center ${onJobClick ? "hover:cursor-pointer" : ""} ${job.code === selectedJob ? " bg-blue-700" : ""}`}>
                                     <p >
                                         {job.name}
                                     </p>
-                                    {!onJobClick ? <p>¥ {NumberWithCommas(statistics.filter(s => s.category === selectedIndustry)[0].values.filter(v => v.job.name === job.name)[0].amount * 1000)}</p> : null}
+                                    {!onJobClick ? <p>{getAmountsFromStatistics(job)}</p> : null}
                                 </div>
                             ))
                         }

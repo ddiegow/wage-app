@@ -119,7 +119,7 @@ const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) =>
                 const color = ValueToColor(min, max, data)
                 return "hsl(" + color.toString() + ",100%, 50%)";
             }
-            const tooltips = jobData.map(jd => ({ prefecture: jd.prefecture, tooltip: "¥ " + NumberWithCommas(jd.amount * 10000) }))
+            const tooltips = jobData.map(jd => ({ prefecture: jd.prefecture, tooltip: "¥ " + NumberWithCommas(jd.amount * 1000) }))
             const mapping = GenerateMapElements(mapData, selectedPrefecture, hoveredPrefecture, setHoveredPrefecture, selectedView === "prefecture" ? handleClickMap : () => { }, null, getColorCode, tooltips)
             setMappings(mapping ? mapping : [])
         }
@@ -151,6 +151,7 @@ const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) =>
                             onJobClick={null}
                             onIndustryClick={(selectedIndustry: string) => setSelectedIndustry(selectedIndustry)}
                             industryList={selectedIndustry ? [] : translatedIndustries}
+                            selectedJob=""
                             jobList={selectedIndustry ? translatedJobs[selectedIndustry] : []}
                         />
                         }
@@ -172,6 +173,7 @@ const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) =>
                             }}
                             onIndustryClick={(selectedIndustry: string) => setSelectedIndustry(selectedIndustry)}
                             industryList={selectedIndustry ? [] : translatedIndustries}
+                            selectedJob={selectedJob}
                             jobList={selectedIndustry ? translatedJobs[selectedIndustry] : []}
                         />
                         }
