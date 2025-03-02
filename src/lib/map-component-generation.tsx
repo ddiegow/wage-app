@@ -1,11 +1,10 @@
-import { SetStateAction } from "react";
 import { v4 as uuidv4 } from 'uuid';
 
 export const GenerateMapElements = (
     data: string,
     selectedPrefecture: string,
     hoveredPrefecture: string,
-    setHoveredPrefecture: React.Dispatch<SetStateAction<string>>,
+    setHoveredPrefecture: (hoveredPrefecture: string) => void,
     handleClick: (code: string) => void,
     // color setting for prefecture view mode
     getFillColor: ((isSelected: boolean, isHovered: boolean) => string) | null,

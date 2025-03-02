@@ -1,10 +1,10 @@
 import { JSX, useEffect, useState } from "react";
-import { PrefectureCategoryEntry, WageData } from "./lib/types";
+import { WageData } from "./lib/types";
 import { getByJob, getByPrefecture } from "./lib/data-fetching";
 import IndustryComponent from "./IndustryComponent";
 import MapComponent from "./MapComponent";
 import MenuComponent from "./MenuComponent";
-import { translatedJobs, translatedPrefectures } from "./lib/data-translation";
+import { translatedPrefectures } from "./lib/data-translation";
 import { GenerateMapElements } from "./lib/map-component-generation";
 import { ValueToColor } from "./lib/coloring";
 import { NumberWithCommas } from "./lib/currency";
@@ -12,15 +12,20 @@ import { useAppStore } from "./store/store";
 
 const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => {
     const [mappings, setMappings] = useState<(JSX.Element)[]>([])
-    const [statistics, setStatistics] = useState<PrefectureCategoryEntry[]>([]);
-    const [selectedPrefecture, setSelectedPrefecture] = useState("");
-    const [hoveredPrefecture, setHoveredPrefecture] = useState("");
-    const [selectedIndustry, setSelectedIndustry] = useState("");
-    const [selectedJob, setSelectedJob] = useState("");
-    // const [selectedView, setSelectedView] = useState("prefecture")
-    //const [title, setTitle] = useState("Please select a prefecture")
-    const [mapData, setMapData] = useState("")
-    const { setTitle, selectedView } = useAppStore();
+
+    const {
+        setTitle,
+        selectedView,
+        selectedJob,
+        selectedPrefecture,
+        setSelectedPrefecture,
+        hoveredPrefecture,
+        setHoveredPrefecture,
+        statistics,
+        setStatistics,
+        mapData,
+        setMapData,
+    } = useAppStore();
     /**
      * takes a prefecture code as assigned by svg and transforms it into a stats-file-adequate code
      * 
@@ -163,17 +168,6 @@ const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) =>
         }
     }, [selectedJob, selectedPrefecture, hoveredPrefecture, selectedView]);
 
-    /**
-     * update the title state when the view changes
-     */
-    /*
-    useEffect(() => {
-        if (selectedView === "prefecture")
-            setTitle("Please select a prefecture")
-        else
-            setTitle("Please select a job")
-    }, [selectedView])
-    */
     return (
         <div className="h-screen">
             {/* top bar (buttons + title) */}
@@ -186,12 +180,7 @@ const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) =>
                     <>
                         <MapComponent mappings={mappings} />
                         {statistics.length > 0 && <IndustryComponent
-                            selectedPrefecture={selectedPrefecture}
-                            selectedIndustry={selectedIndustry}
                             statistics={statistics}
-                            onJobClick={null}
-                            onIndustryClick={(selectedIndustry: string) => setSelectedIndustry(selectedIndustry)}
-                            selectedJob=""
                         />
                         }
                     </>
@@ -200,16 +189,7 @@ const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) =>
                     selectedView === "industry" &&
                     <>
                         {<IndustryComponent
-                            selectedPrefecture={selectedPrefecture}
-                            selectedIndustry={selectedIndustry}
                             statistics={statistics}
-                            onJobClick={(selectedJob: string) => {
-                                setSelectedJob(selectedJob)
-                                const job = translatedJobs[selectedIndustry].filter(j => j.code === selectedJob)[0]
-                                setTitle(job ? job.name : "Please select a job")
-                            }}
-                            onIndustryClick={(selectedIndustry: string) => setSelectedIndustry(selectedIndustry)}
-                            selectedJob={selectedJob}
                         />
                         }
                         <MapComponent mappings={mappings} />

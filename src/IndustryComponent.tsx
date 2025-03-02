@@ -3,29 +3,22 @@ import { Job, PrefectureCategoryEntry } from "./lib/types";
 import { NumberWithCommas } from "./lib/currency";
 import IndustrySlotsComponent from "./IndustrySlotsComponent";
 import JobSlotsComponent from "./JobSlotsComponent";
+import { useAppStore } from "./store/store";
 
 interface IndustryComponentProps {
-    selectedPrefecture: string
-    selectedIndustry: string
     statistics: PrefectureCategoryEntry[]
-    onIndustryClick: (selectedIndustry: string) => void
-    onJobClick: ((selectedJob: string) => void) | null
-    selectedJob: string
 }
 
 const IndustryComponent =
     (
         {
-            selectedIndustry,
-            selectedJob,
             statistics,
-            onIndustryClick,
-            onJobClick,
         }: IndustryComponentProps
     ) => {
         // state used to assist in fade effect
         const [fadeToggle, setFadeToggle] = useState(false);
         const toggleFade = () => setFadeToggle(prev => !prev)
+        const { selectedIndustry } = useAppStore();
         /**
          * look for the job's statistical data in the statistics passed as a prop
          * 
@@ -47,17 +40,12 @@ const IndustryComponent =
                 {!selectedIndustry && (
                     <IndustrySlotsComponent
                         toggleFade={toggleFade}
-                        onIndustryClick={onIndustryClick}
                     />)
                 }
                 {/* Grid with the available job choices according to selected industry */}
                 {selectedIndustry &&
                     <JobSlotsComponent
-                        selectedIndustry={selectedIndustry}
-                        selectedJob={selectedJob}
                         toggleFade={toggleFade}
-                        onIndustryClick={onIndustryClick}
-                        onJobClick={onJobClick}
                         getAmountsFromStatistics={getAmountsFromStatistics}
                     />
                 }

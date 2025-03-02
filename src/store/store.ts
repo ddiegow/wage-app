@@ -46,10 +46,8 @@ export const useAppStore = create<Store>((set) => ({
     resetState: () => set({
         statistics: [],
         selectedPrefecture: "",
-        selectedIndustry: "",
         selectedJob: "",
         hoveredPrefecture: "",
         title: "",
-        mapData: ""
     }),
 }))

@@ -1,42 +1,38 @@
 import { translatedJobs } from "./lib/data-translation";
 import { v4 as uuidv4 } from "uuid";
 import { Job } from "./lib/types";
+import { useAppStore } from "./store/store";
 
 interface JobSlotsComponentProps {
-    selectedIndustry: string
-    selectedJob: string
     toggleFade: () => void
-    onIndustryClick: (selectedIndustry: string) => void
-    onJobClick: ((selectedJob: string) => void) | null
     getAmountsFromStatistics: (job: Job) => string
 }
 
 const JobSlotsComponent = (
     {
-        selectedIndustry,
-        selectedJob,
         toggleFade,
-        onIndustryClick,
-        onJobClick,
         getAmountsFromStatistics
-    }: JobSlotsComponentProps) =>
-    <>
+    }: JobSlotsComponentProps) => {
+    const { selectedIndustry, selectedJob, setSelectedIndustry, setSelectedJob, selectedView, setTitle } = useAppStore();
+    return <>
         {
             translatedJobs[selectedIndustry].map((job) => (
-                <div key={uuidv4()} onClick={onJobClick ? () => onJobClick(job.code) : () => { }} className={`border-white border-solid border-1 p-3 text-center ${onJobClick ? "hover:cursor-pointer hover:bg-blue-700" : ""} ${job.code === selectedJob ? " bg-blue-700" : ""}`}>
+                <div key={uuidv4()} onClick={selectedView === "industry" ? () => {
+                    setSelectedJob(job.code)
+                    setTitle(job.name);
+                } : () => { }} className={`border-white border-solid border-1 p-3 text-center ${selectedView === "industry" ? "hover:cursor-pointer hover:bg-blue-700" : ""} ${job.code === selectedJob ? " bg-blue-700" : ""}`}>
                     <p >
                         {job.name}
                     </p>
-                    {!onJobClick ? <p>{getAmountsFromStatistics(job)}</p> : null}
+                    {selectedView === "prefecture" ? <p>{getAmountsFromStatistics(job)}</p> : null}
                 </div>
             ))
         }
         <p className="hover:cursor-pointer" onClick={() => {
             toggleFade();
             setTimeout(() => {
-                onIndustryClick("");
-                if (onJobClick)
-                    onJobClick("");
+                setSelectedIndustry("");
+                setSelectedJob("");
                 toggleFade()
             }, 500)
         }}>
@@ -45,5 +41,5 @@ const JobSlotsComponent = (
             </svg>
         </p>
     </>
-
+}
 export default JobSlotsComponent;

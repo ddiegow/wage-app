@@ -1,16 +1,17 @@
 import { translatedIndustries } from "./lib/data-translation";
 import { v4 as uuidv4 } from "uuid";
+import { useAppStore } from "./store/store";
 
 interface IndustrySlotsComponentProps {
     toggleFade: () => void
-    onIndustryClick: (selectedIndustry: string) => void
 }
-const IndustrySlotsComponent = ({ toggleFade, onIndustryClick }: IndustrySlotsComponentProps) => {
+const IndustrySlotsComponent = ({ toggleFade }: IndustrySlotsComponentProps) => {
+    const { setSelectedIndustry } = useAppStore()
     return translatedIndustries.map((industry) =>
         <p key={uuidv4()} onClick={() => {
             toggleFade()
             setTimeout(() => {
-                onIndustryClick(industry)
+                setSelectedIndustry(industry)
                 toggleFade()
             }, 500
             )
