@@ -1,4 +1,4 @@
-import { JSX, useEffect, useState } from "react";
+import { useEffect } from "react";
 import { WageData } from "./lib/types";
 import { getByJob, getByPrefecture } from "./lib/data-fetching";
 import IndustryComponent from "./IndustryComponent";
@@ -11,8 +11,6 @@ import { NumberWithCommas } from "./lib/currency";
 import { useAppStore } from "./store/store";
 
 const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => {
-    const [mappings, setMappings] = useState<(JSX.Element)[]>([])
-
     const {
         setTitle,
         selectedView,
@@ -25,6 +23,8 @@ const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) =>
         setStatistics,
         mapData,
         setMapData,
+        mappings,
+        setMappings
     } = useAppStore();
     /**
      * takes a prefecture code as assigned by svg and transforms it into a stats-file-adequate code

@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { PrefectureCategoryEntry } from "../lib/types";
+import { JSX } from "react";
 
 type StoreState = {
     statistics: PrefectureCategoryEntry[];
@@ -10,6 +11,7 @@ type StoreState = {
     hoveredPrefecture: string;
     title: string;
     mapData: string;
+    mappings: JSX.Element[];
 }
 type StoreActions = {
     setStatistics: (statistics: PrefectureCategoryEntry[]) => void;
@@ -21,6 +23,7 @@ type StoreActions = {
     setTitle: (title: string) => void;
     setMapData: (mapData: string) => void;
     resetState: () => void;
+    setMappings: (mappings: JSX.Element[]) => void
 }
 
 type Store = StoreState & StoreActions;
@@ -33,7 +36,8 @@ export const useAppStore = create<Store>((set) => ({
     selectedView: "",
     hoveredPrefecture: "",
     title: "",
-    mapData: ""
+    mapData: "",
+    mappings: []
     ,
     setStatistics: (statistics) => set({ statistics: statistics }),
     setSelectedPrefecture: (selectedPrefecture) => set({ selectedPrefecture }),
@@ -43,6 +47,7 @@ export const useAppStore = create<Store>((set) => ({
     setHoveredPrefecture: (hoveredPrefecture: string) => set({ hoveredPrefecture }),
     setTitle: (title) => set({ title }),
     setMapData: (mapData) => set({ mapData }),
+    setMappings: (mappings) => set({ mappings }),
     resetState: () => set({
         statistics: [],
         selectedPrefecture: "",
