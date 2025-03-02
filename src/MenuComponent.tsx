@@ -1,13 +1,7 @@
-import { SetStateAction } from "react";
+import { useAppStore } from "./store/store";
 
-interface MenuComponentProps {
-    selectedView: string;
-    setSelectedView: React.Dispatch<SetStateAction<string>>
-    title: string
-    reset: () => void
-}
-
-const MenuComponent = ({ selectedView, setSelectedView, title, reset }: MenuComponentProps) => {
+const MenuComponent = () => {
+    const { selectedView, setSelectedView, title, resetState } = useAppStore();
     return <>
         <p
             className={
@@ -16,7 +10,7 @@ const MenuComponent = ({ selectedView, setSelectedView, title, reset }: MenuComp
             }
             onClick={() => {
                 setSelectedView("prefecture")
-                reset();
+                resetState();
             }}
         >
             View by prefecture
@@ -31,7 +25,7 @@ const MenuComponent = ({ selectedView, setSelectedView, title, reset }: MenuComp
             }
             onClick={() => {
                 setSelectedView("industry")
-                reset();
+                resetState();
             }}
         >
             View by Industry

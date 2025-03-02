@@ -8,6 +8,7 @@ import { translatedJobs, translatedPrefectures } from "./lib/data-translation";
 import { GenerateMapElements } from "./lib/map-component-generation";
 import { ValueToColor } from "./lib/coloring";
 import { NumberWithCommas } from "./lib/currency";
+import { useAppStore } from "./store/store";
 
 const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) => {
     const [mappings, setMappings] = useState<(JSX.Element)[]>([])
@@ -16,9 +17,10 @@ const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) =>
     const [hoveredPrefecture, setHoveredPrefecture] = useState("");
     const [selectedIndustry, setSelectedIndustry] = useState("");
     const [selectedJob, setSelectedJob] = useState("");
-    const [selectedView, setSelectedView] = useState("prefecture")
-    const [title, setTitle] = useState("Please select a prefecture")
+    // const [selectedView, setSelectedView] = useState("prefecture")
+    //const [title, setTitle] = useState("Please select a prefecture")
     const [mapData, setMapData] = useState("")
+    const { setTitle, selectedView } = useAppStore();
     /**
      * takes a prefecture code as assigned by svg and transforms it into a stats-file-adequate code
      * 
@@ -63,18 +65,7 @@ const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) =>
         // set state so that IndustryComponent updates with fresh data
         setStatistics(data)
     }
-    /**
-     * reset to initial state
-     * 
-     * @returns nothing
-     */
-    const reset = () => {
-        setSelectedIndustry("");
-        setSelectedJob("");
-        setSelectedPrefecture("");
-        setHoveredPrefecture("");
-        setStatistics([]);
-    }
+
     // on first load we fetch the map data and, because we start in prefecture mode, render an empty map
     useEffect(() => {
         fetch("/maps/map-full.svg")
@@ -175,18 +166,19 @@ const ViewComponent: React.FC<{ wageData: WageData | null }> = ({ wageData }) =>
     /**
      * update the title state when the view changes
      */
+    /*
     useEffect(() => {
         if (selectedView === "prefecture")
             setTitle("Please select a prefecture")
         else
             setTitle("Please select a job")
     }, [selectedView])
-
+    */
     return (
         <div className="h-screen">
             {/* top bar (buttons + title) */}
             <div className="flex justify-between m-5">
-                <MenuComponent reset={reset} selectedView={selectedView} setSelectedView={setSelectedView} title={title}></MenuComponent>
+                < MenuComponent />
             </div>
             <div className={"flex gap-20 justify-center " + (!selectedPrefecture ? "h-9/10" : "")}>
                 {/* view by prefecture */}
