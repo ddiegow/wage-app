@@ -4,11 +4,12 @@ need to refactor prefecture hover so that it does one thing or another depending
 
 check coloring (done)
 
-- clean up states and code in general
+- clean up states and code in general (ONGOING)
 - check resetting map colors when going back to industries panel in view industry mode (DONE)
 - check if there's any way to refactor the main useEffect so it doesn't repeat everything on every single
   state change (for example, when hoveredPrefecture changes, only updated the hovered prefecture,
   not the whole map, and that doesn't need to be done when all the other states change)
+- consider creating jobEntries state and using it in the map component (do all the map creation and updating in said component)
 
   BUGS
 

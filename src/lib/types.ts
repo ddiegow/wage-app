@@ -114,6 +114,14 @@ export interface RESULT {
     DATE: string;
 }
 
+export type Prefecture = {
+    code: string,
+    name: string
+}
+
+export type Industry = {
+    name: string
+}
 export type Job = {
     code: string;
     name: string;
@@ -128,10 +136,24 @@ export type PrefectureCategoryEntry = {
     values: PrefectureEntryValue[]
 }
 
+export type PrefectureEntries = {
+    prefecture: Prefecture,
+    values: PrefectureEntryValue[]
+}
+
 export type PrefectureEntryValue = {
     job: {
         code: string,
         name: string
     },
-    amount: number
+    data: { salary: number, sampleSize: number }
+}
+
+export type JobEntries = {
+    job: Job,
+    values: JobEntryValue[]
+}
+export type JobEntryValue = {
+    prefecture: Prefecture,
+    data: { salary: number, sampleSize: number }
 }

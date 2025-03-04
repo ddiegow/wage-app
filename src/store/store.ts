@@ -1,12 +1,12 @@
-import { create } from "zustand";
-import { PrefectureCategoryEntry } from "../lib/types";
 import { JSX } from "react";
+import { create } from "zustand";
+import { Job, Prefecture, PrefectureEntries } from "../lib/types";
 
 type StoreState = {
-    statistics: PrefectureCategoryEntry[];
-    selectedPrefecture: string;
+    prefectureEntries: PrefectureEntries | null;
+    selectedPrefecture: Prefecture | null;
     selectedIndustry: string;
-    selectedJob: string;
+    selectedJob: Job | null;
     selectedView: string;
     hoveredPrefecture: string;
     title: string;
@@ -14,10 +14,10 @@ type StoreState = {
     mappings: JSX.Element[];
 }
 type StoreActions = {
-    setStatistics: (statistics: PrefectureCategoryEntry[]) => void;
-    setSelectedPrefecture: (selectedPrefecture: string) => void;
+    setPrefectureEntries: (prefectureEntries: PrefectureEntries) => void;
+    setSelectedPrefecture: (selectedPrefecture: Prefecture | null) => void;
     setSelectedIndustry: (selectedIndustry: string) => void;
-    setSelectedJob: (selectedJob: string) => void;
+    setSelectedJob: (selectedJob: Job | null) => void;
     setSelectedView: (selectedView: string) => void;
     setHoveredPrefecture: (selectedHoveredPrefecture: string) => void;
     setTitle: (title: string) => void;
@@ -29,17 +29,17 @@ type StoreActions = {
 type Store = StoreState & StoreActions;
 
 export const useAppStore = create<Store>((set) => ({
-    statistics: [],
-    selectedPrefecture: "",
+    prefectureEntries: null,
+    selectedPrefecture: null,
     selectedIndustry: "",
-    selectedJob: "",
+    selectedJob: null,
     selectedView: "",
     hoveredPrefecture: "",
     title: "",
     mapData: "",
     mappings: []
     ,
-    setStatistics: (statistics) => set({ statistics: statistics }),
+    setPrefectureEntries: (prefectureEntries) => set({ prefectureEntries }),
     setSelectedPrefecture: (selectedPrefecture) => set({ selectedPrefecture }),
     setSelectedIndustry: (selectedIndustry) => set({ selectedIndustry }),
     setSelectedJob: (selectedJob) => set({ selectedJob }),
@@ -49,9 +49,10 @@ export const useAppStore = create<Store>((set) => ({
     setMapData: (mapData) => set({ mapData }),
     setMappings: (mappings) => set({ mappings }),
     resetState: () => set({
-        statistics: [],
-        selectedPrefecture: "",
-        selectedJob: "",
+        prefectureEntries: null,
+        selectedPrefecture: null,
+        selectedJob: null,
+        selectedIndustry: "",
         hoveredPrefecture: "",
         title: "",
     }),

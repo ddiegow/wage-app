@@ -1,16 +1,16 @@
 import { v4 as uuidv4 } from 'uuid';
+import { getColorJobView, getColorPrefectureView } from './coloring';
+import { getPrefectureFromCode } from './data-transformation';
+import { JobEntries, Prefecture } from './types';
 
 export const GenerateMapElements = (
     data: string,
-    selectedPrefecture: string,
+    selectedPrefecture: Prefecture | null,
     hoveredPrefecture: string,
     setHoveredPrefecture: (hoveredPrefecture: string) => void,
-    handleClick: (code: string) => void,
-    // color setting for prefecture view mode
-    getFillColor: ((isSelected: boolean, isHovered: boolean) => string) | null,
-    // color setting for industry view mode
-    getColorCode: ((prefecture: string) => string) | null,
-    tooltips: { prefecture: { code: string, name: string }, tooltip: string }[]
+    handleClick: (prefecture: Prefecture) => void,
+    tooltips: { prefecture: { code: string, name: string }, tooltip: string }[],
+    jobEntries: JobEntries | null
 ) => {
     // we're still fetching the data or something has gone wrong
     if (!data.length)
@@ -22,12 +22,15 @@ export const GenerateMapElements = (
         const prefCode = g.getAttribute("data-code") || "";
         let color = "";
         // depending on which mode we're in, use one filling method or another
-        if (getFillColor) {
-            color = getFillColor(prefCode === selectedPrefecture, prefCode === hoveredPrefecture)
-        } else if (getColorCode) {
-            color = getColorCode(prefCode)
-        } else { // if something went wrong, there won't be any colors
-            color = "";
+        if (selectedPrefecture) {
+            const isSelected = prefCode === selectedPrefecture.code
+            const isHovered = prefCode === hoveredPrefecture
+            color = getColorPrefectureView(isSelected, isHovered)
+        } else {
+            if (!jobEntries)
+                color = "#EEEEEE"
+            else
+                color = getColorJobView(jobEntries, prefCode)
         }
         const prefectureName = g.querySelector('title')?.textContent || ""
         const prefectureTooltip = tooltips.find(t => t.prefecture.name === prefectureName)
@@ -43,7 +46,7 @@ export const GenerateMapElements = (
                 tooltip,
                 () => setHoveredPrefecture(prefCode),
                 () => setHoveredPrefecture(""),
-                (e) => handleClick(e.currentTarget.getAttribute("data-code") || "")
+                (e) => handleClick(getPrefectureFromCode(e.currentTarget.getAttribute("data-code") || ""))
             )
             :
             generateReactG(
@@ -52,7 +55,7 @@ export const GenerateMapElements = (
                 tooltip,
                 () => setHoveredPrefecture(prefCode),
                 () => setHoveredPrefecture(""),
-                (e) => handleClick(e.currentTarget.getAttribute("data-code") || "")
+                (e) => handleClick(getPrefectureFromCode(e.currentTarget.getAttribute("data-code") || ""))
             )
     });
     return mapping;

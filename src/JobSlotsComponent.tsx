@@ -1,11 +1,11 @@
-import { translatedJobs } from "./lib/data-translation";
 import { v4 as uuidv4 } from "uuid";
+import { translatedJobs } from "./lib/data-translation";
 import { Job } from "./lib/types";
 import { useAppStore } from "./store/store";
 
 interface JobSlotsComponentProps {
     toggleFade: () => void
-    getAmountsFromStatistics: (job: Job) => string
+    getAmountsFromStatistics: (job: Job) => { salary: number, sampleSize: number }
 }
 
 const JobSlotsComponent = (
@@ -15,16 +15,16 @@ const JobSlotsComponent = (
     }: JobSlotsComponentProps) => {
     const { selectedIndustry, selectedJob, setSelectedIndustry, setSelectedJob, selectedView, setTitle } = useAppStore();
     return <>
-        {
+        {selectedIndustry &&
             translatedJobs[selectedIndustry].map((job) => (
                 <div key={uuidv4()} onClick={selectedView === "industry" ? () => {
-                    setSelectedJob(job.code)
+                    setSelectedJob(job)
                     setTitle(job.name);
-                } : () => { }} className={`border-white border-solid border-1 p-3 text-center ${selectedView === "industry" ? "hover:cursor-pointer hover:bg-blue-700" : ""} ${job.code === selectedJob ? " bg-blue-700" : ""}`}>
+                } : () => { }} className={`border-white border-solid border-1 p-3 text-center ${selectedView === "industry" ? "hover:cursor-pointer hover:bg-blue-700" : ""} ${job.code === selectedJob?.code ? " bg-blue-700" : ""}`}>
                     <p >
                         {job.name}
                     </p>
-                    {selectedView === "prefecture" ? <p>{getAmountsFromStatistics(job)}</p> : null}
+                    {selectedView === "prefecture" ? <p>{getAmountsFromStatistics(job).salary * 1000}</p> : null}
                 </div>
             ))
         }
@@ -32,7 +32,7 @@ const JobSlotsComponent = (
             toggleFade();
             setTimeout(() => {
                 setSelectedIndustry("");
-                setSelectedJob("");
+                setSelectedJob(null);
                 toggleFade()
             }, 500)
         }}>

@@ -1,5 +1,5 @@
 import { translatedJobs, translatedPrefectures } from "./data-translation";
-import { IndustryJobs, PrefectureCategoryEntry, VALUE } from "./types";
+import { IndustryJobs, Job, JobEntries, Prefecture, PrefectureEntries, VALUE } from "./types";
 
 export const fetchData = async () => {
     try {
@@ -21,35 +21,33 @@ export const getPrefectures = (): { code: string, name: string }[] => {
     return translatedPrefectures;
 }
 
-export const getByJobAndPrefecture = (values: VALUE[], prefectureCode: string, jobCode: string): number | null => {
+export const getByJobAndPrefecture = (values: VALUE[], prefectureCode: string, jobCode: string): { salary: number, sampleSize: number } | null => {
     const baseSalary = values.find(v => v["@tab"] == "40" && v["@cat02"] == jobCode && v["@area"] == prefectureCode);
     const bonus = values.find(v => v["@tab"] == "44" && v["@cat02"] == jobCode && v["@area"] == prefectureCode);
-    if (!baseSalary || !bonus)
+    const sampleSize = values.find(v => v["@tab"] == "45" && v["@cat02"] == jobCode && v["@area"] == prefectureCode)
+    if (!baseSalary || !bonus || !sampleSize)
         return null;
-    return Math.round(Number(baseSalary.$) * 12 + Number(bonus.$));
+    return { salary: Math.round(Number(baseSalary.$) * 12 + Number(bonus.$)), sampleSize: Number(sampleSize.$) };
 }
-export const getByPrefecture = (values: VALUE[], prefectureCode: string): PrefectureCategoryEntry[] => {
-    //const entries: { job: { code: string, name: string }, amount: number }[] = []
-    const entries: PrefectureCategoryEntry[] = [];
+export const getByPrefecture = (values: VALUE[], prefecture: Prefecture): PrefectureEntries => {
+    const entries: PrefectureEntries = { prefecture, values: [] };
     for (const category in translatedJobs) {
-        const entry: PrefectureCategoryEntry = { category: category, values: [] }
         for (const job of translatedJobs[category]) {
-            const amount = getByJobAndPrefecture(values, prefectureCode, job.code)
-            if (amount)
-                entry.values.push({ job: job, amount: amount })
+            const data = getByJobAndPrefecture(values, prefecture.code, job.code)
+            if (data)
+                entries.values.push({ job, data })
         }
-        entries.push(entry)
     }
     return entries
 }
 
-export const getByJob = (values: VALUE[], jobCode: string): { prefecture: { code: string, name: string }, amount: number }[] => {
+export const getByJob = (values: VALUE[], job: Job): JobEntries => {
     const prefectures = getPrefectures();
-    const entries: { prefecture: { code: string, name: string }, amount: number }[] = []
+    const entries: JobEntries = { job, values: [] }
     for (const prefecture of prefectures) {
-        const amount = getByJobAndPrefecture(values, prefecture.code, jobCode)
-        if (amount)
-            entries.push({ prefecture: prefecture, amount: amount })
+        const data = getByJobAndPrefecture(values, prefecture.code, job.code)
+        if (data)
+            entries.values.push({ prefecture: prefecture, data: data })
     }
     return entries
 }
