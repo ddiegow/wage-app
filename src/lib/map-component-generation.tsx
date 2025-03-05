@@ -1,10 +1,11 @@
 import { v4 as uuidv4 } from 'uuid';
 import { getColorJobView, getColorPrefectureView } from './coloring';
-import { getPrefectureFromCode } from './data-transformation';
+import { correctPrefecture, getPrefectureFromCode } from './data-transformation';
 import { JobEntries, Prefecture } from './types';
 
 export const GenerateMapElements = (
     data: string,
+    selectedView: string,
     selectedPrefecture: Prefecture | null,
     hoveredPrefecture: string,
     setHoveredPrefecture: (hoveredPrefecture: string) => void,
@@ -22,8 +23,8 @@ export const GenerateMapElements = (
         const prefCode = g.getAttribute("data-code") || "";
         let color = "";
         // depending on which mode we're in, use one filling method or another
-        if (selectedPrefecture) {
-            const isSelected = prefCode === selectedPrefecture.code
+        if (selectedView === "prefecture") {
+            const isSelected = correctPrefecture(prefCode) === selectedPrefecture?.code
             const isHovered = prefCode === hoveredPrefecture
             color = getColorPrefectureView(isSelected, isHovered)
         } else {
@@ -42,6 +43,7 @@ export const GenerateMapElements = (
             // generate an svg element with paths from a polygon element
             generatePathsFromPolygon(
                 g,
+                selectedView,
                 color,
                 tooltip,
                 () => setHoveredPrefecture(prefCode),
@@ -51,6 +53,7 @@ export const GenerateMapElements = (
             :
             generateReactG(
                 g,
+                selectedView,
                 color,
                 tooltip,
                 () => setHoveredPrefecture(prefCode),
@@ -61,7 +64,7 @@ export const GenerateMapElements = (
     return mapping;
 }
 
-const generatePathsFromPolygon = (g: SVGElement, color: string, tooltip: string, onMouseOver: () => void, onMouseLeave: () => void, onClick: (e: React.MouseEvent<SVGGElement, MouseEvent>) => void
+const generatePathsFromPolygon = (g: SVGElement, selectedView: string, color: string, tooltip: string, onMouseOver: () => void, onMouseLeave: () => void, onClick: (e: React.MouseEvent<SVGGElement, MouseEvent>) => void
 ) => {
     // create a new react element
     const polygons = Array.from(g.querySelectorAll<SVGPolygonElement>("polygon"));
@@ -95,7 +98,7 @@ const generatePathsFromPolygon = (g: SVGElement, color: string, tooltip: string,
         <g
             key={uuidv4()}
             transform={g.getAttribute("transform") || ""}
-            className={g.classList.toString() + " hover:cursor-pointer"}
+            className={g.classList.toString() + (selectedView === "prefecture" ? " hover:cursor-pointer" : "")}
             strokeLinejoin="round"
             fill={color}
             fillRule="nonzero"
@@ -113,7 +116,7 @@ const generatePathsFromPolygon = (g: SVGElement, color: string, tooltip: string,
 
 }
 
-const generateReactG = (g: SVGElement, color: string, tooltip: string, onMouseOver: () => void, onMouseLeave: () => void, onClick: (e: React.MouseEvent<SVGGElement, MouseEvent>) => void) => {
+const generateReactG = (g: SVGElement, selectedView: string, color: string, tooltip: string, onMouseOver: () => void, onMouseLeave: () => void, onClick: (e: React.MouseEvent<SVGGElement, MouseEvent>) => void) => {
     // no polygons, create a new react element
     // and keep the original children
     const children = Array.from(g.childNodes).map((child) => {
@@ -141,7 +144,7 @@ const generateReactG = (g: SVGElement, color: string, tooltip: string, onMouseOv
         <g
             key={uuidv4()}
             transform={g.getAttribute("transform") || ""}
-            className={g.classList.toString() + " hover:cursor-pointer"}
+            className={g.classList.toString() + (selectedView === "prefecture" ? " hover:cursor-pointer" : "")}
             fill={color}
             stroke={g.getAttribute("stroke") || "#000000"}
             strokeWidth={g.getAttribute("stroke-width") || "1.0"}

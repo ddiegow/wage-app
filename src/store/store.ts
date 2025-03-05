@@ -1,8 +1,9 @@
 import { JSX } from "react";
 import { create } from "zustand";
-import { Job, Prefecture, PrefectureEntries } from "../lib/types";
+import { Job, Prefecture, PrefectureEntries, WageData } from "../lib/types";
 
 type StoreState = {
+    wageData: WageData | null;
     prefectureEntries: PrefectureEntries | null;
     selectedPrefecture: Prefecture | null;
     selectedIndustry: string;
@@ -14,6 +15,7 @@ type StoreState = {
     mappings: JSX.Element[];
 }
 type StoreActions = {
+    setWageData: (wageData: WageData) => void;
     setPrefectureEntries: (prefectureEntries: PrefectureEntries) => void;
     setSelectedPrefecture: (selectedPrefecture: Prefecture | null) => void;
     setSelectedIndustry: (selectedIndustry: string) => void;
@@ -29,6 +31,7 @@ type StoreActions = {
 type Store = StoreState & StoreActions;
 
 export const useAppStore = create<Store>((set) => ({
+    wageData: null,
     prefectureEntries: null,
     selectedPrefecture: null,
     selectedIndustry: "",
@@ -39,6 +42,7 @@ export const useAppStore = create<Store>((set) => ({
     mapData: "",
     mappings: []
     ,
+    setWageData: (wageData) => set({ wageData }),
     setPrefectureEntries: (prefectureEntries) => set({ prefectureEntries }),
     setSelectedPrefecture: (selectedPrefecture) => set({ selectedPrefecture }),
     setSelectedIndustry: (selectedIndustry) => set({ selectedIndustry }),

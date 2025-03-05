@@ -1,17 +1,2 @@
-need to refactor prefecture hover so that it does one thing or another depending on view mode:
-    if it's in prefecture mode, normal hovering (done)
-    if it's in industry mode, show the tooltip with the prefecture + salary (done)
-
-check coloring (done)
-
-- clean up states and code in general (ONGOING)
-- check resetting map colors when going back to industries panel in view industry mode (DONE)
-- check if there's any way to refactor the main useEffect so it doesn't repeat everything on every single
-  state change (for example, when hoveredPrefecture changes, only updated the hovered prefecture,
-  not the whole map, and that doesn't need to be done when all the other states change)
-- consider creating jobEntries state and using it in the map component (do all the map creation and updating in said component)
-
-  BUGS
-
-  - some industry selections in "prefecture mode" break down the app (probably no data) (FIXED)
-  - amounts shown in colored map tooltips are wrong by factor of 10 (FIXED)
+BUGS
+  - reset on view mode change doesn't work

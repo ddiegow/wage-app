@@ -24,7 +24,7 @@ const JobSlotsComponent = (
                     <p >
                         {job.name}
                     </p>
-                    {selectedView === "prefecture" ? <p>{getAmountsFromStatistics(job).salary * 1000}</p> : null}
+                    {selectedView === "prefecture" ? <p>{getAmountsFromStatistics(job).salary ? getAmountsFromStatistics(job).salary * 1000 : "No data"}</p> : null}
                 </div>
             ))
         }

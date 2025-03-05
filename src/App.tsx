@@ -1,20 +1,20 @@
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import './App.css'
 import { fetchData, } from './lib/data-fetching'
-import { WageData } from './lib/types'
+import { useAppStore } from './store/store'
 import ViewComponent from './ViewComponent'
 
 function App() {
-  const [data, setData] = useState<WageData | null>(null);
+  const { setWageData } = useAppStore()
   useEffect(() => {
     fetchData().then(jsonData => {
-      setData(jsonData)
+      setWageData(jsonData)
     }).catch(err => console.log(err))
   }, [])
   return (
     <>
-      <ViewComponent wageData={data} />
+      <ViewComponent />
     </>
   )
 }
