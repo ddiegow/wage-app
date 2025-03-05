@@ -1,7 +1,6 @@
 import { useEffect } from "react";
-import { NumberWithCommas } from "./lib/currency";
 import { getByJob, getByPrefecture } from "./lib/data-fetching";
-import { correctPrefecture } from "./lib/data-transformation";
+import { correctPrefecture, NumberWithCommas } from "./lib/data-transformation";
 import { translatedPrefectures } from "./lib/data-translation";
 import { GenerateMapElements } from "./lib/map-component-generation";
 import { Prefecture } from "./lib/types";
@@ -64,7 +63,7 @@ const MapComponent = () => {
                 const data = jobEntries.values.find(je => je.prefecture.code === p.code)
                 let tooltip = ""
                 if (data?.data.salary)
-                    tooltip = "¥ " + NumberWithCommas(data.data.salary * 1000) + ` (${data.data.sampleSize} person sample size)`
+                    tooltip = `¥ ${NumberWithCommas(data.data.salary * 1000)} a year (${data.data.sampleSize} person sample size)`
                 else
                     tooltip = "No data"
                 return { prefecture: p, tooltip: tooltip }

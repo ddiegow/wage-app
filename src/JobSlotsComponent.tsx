@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
+import { NumberWithCommas } from "./lib/data-transformation";
 import { translatedJobs } from "./lib/data-translation";
 import { Job } from "./lib/types";
 import { useAppStore } from "./store/store";
@@ -24,7 +25,7 @@ const JobSlotsComponent = (
                     <p >
                         {job.name}
                     </p>
-                    {selectedView === "prefecture" ? <p>{getAmountsFromStatistics(job).salary ? getAmountsFromStatistics(job).salary * 1000 : "No data"}</p> : null}
+                    {selectedView === "prefecture" ? <><p>{getAmountsFromStatistics(job).salary ? `¥ ${NumberWithCommas(getAmountsFromStatistics(job).salary * 1000)} a year` : "No data"}</p><p>{`(${getAmountsFromStatistics(job).salary ? getAmountsFromStatistics(job).sampleSize + " person sample size" : ""})`}</p></> : null}
                 </div>
             ))
         }

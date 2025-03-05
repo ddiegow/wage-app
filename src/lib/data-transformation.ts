@@ -23,3 +23,7 @@ export const getPrefectureFromCode = (prefCode: string) => {
         throw new Error("Something went wrong. Prefecture code not supported")
     return translatedPrefectures[Number(prefCode)]
 }
+
+export const NumberWithCommas = (x: number) => {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
