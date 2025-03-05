@@ -1,50 +1,25 @@
-# React + TypeScript + Vite
+# Japan Wage Statistics Interactive Map
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Overview
 
-Currently, two official plugins are available:
+A React web application that allows users to view 2023 wage data for the different prefectures in Japan. The app allows viewing data by prefecture or by industry.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## Expanding the ESLint configuration
+### Prefecture view
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+In this view mode we can select a prefecture and navigate the different types of industry. When a type of industry is selected, the user will be presented with the different salaries and sample data size.
 
-- Configure the top-level `parserOptions` property like this:
+### Industry view
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+In this view mode we can select an industry and view a map colored according to salary ranges. When hovered over, the different prefectures will display a tooltip with the salary estimate for that area and the sample data size.
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+#### Note about sample data
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+The data was fetched from e-stat.go.jp. Some of the salary estimates are heavily influenced by the sample data size (for example, over 3,000,000 yen a month for dentists in Kagoshima) For this reason, I have included sample data size in order to better understand posible outliers.
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+## TODO
+
+### Adaptive styling
+
+Currently the web application is optimized for desktop computers. When viewed from a mobile phone it becomes very hard to read. I will adapt the styling and application design to better support mobile devices in the near future.
