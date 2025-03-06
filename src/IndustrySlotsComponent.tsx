@@ -7,7 +7,7 @@ interface IndustrySlotsComponentProps {
 }
 const IndustrySlotsComponent = ({ toggleFade }: IndustrySlotsComponentProps) => {
     const { setSelectedIndustry } = useAppStore()
-    return <ul>{translatedIndustries.map((industry) =>
+    return <ul className="list-none">{translatedIndustries.map((industry) =>
         <li key={uuidv4()} onClick={() => {
             toggleFade()
             setTimeout(() => {
