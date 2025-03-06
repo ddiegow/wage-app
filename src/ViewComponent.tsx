@@ -34,7 +34,7 @@ const ViewComponent = () => {
 
 
     return (
-        <div className="flex flex-col items-center mt-5">
+        <div className="max-w-screen flex flex-col items-center mt-5">
             {/* top bar (buttons + title) */}
 
             < MenuComponent />

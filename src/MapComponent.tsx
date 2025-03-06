@@ -75,8 +75,8 @@ const MapComponent = () => {
     }, [selectedJob, selectedPrefecture, hoveredPrefecture, selectedView, mapData]);
 
     return (
-        <div className="w-md h-md">
-            <svg viewBox="0 0 1000 1000" height="100%" width="100%">
+        <div className="w-full max-w-full lg:w-md xl:w-md overflow-hidden">
+            <svg viewBox="0 0 1000 1000" className="w-full h-auto max-w-full">
                 <title>{"Japanese Prefectures"}</title>
                 <g strokeLinejoin="round" className="svg-map">
                     <g fill="#EEE" stroke="#000" className="prefectures">
