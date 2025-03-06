@@ -75,14 +75,16 @@ const MapComponent = () => {
     }, [selectedJob, selectedPrefecture, hoveredPrefecture, selectedView, mapData]);
 
     return (
-        <svg viewBox="0 0 1000 1000" height="100%" width="100%">
-            <title>{"Japanese Prefectures"}</title>
-            <g strokeLinejoin="round" className="svg-map">
-                <g fill="#EEE" stroke="#000" className="prefectures">
-                    {mappings.map(m => m)}
+        <div className="w-md h-md">
+            <svg viewBox="0 0 1000 1000" height="100%" width="100%">
+                <title>{"Japanese Prefectures"}</title>
+                <g strokeLinejoin="round" className="svg-map">
+                    <g fill="#EEE" stroke="#000" className="prefectures">
+                        {mappings.map(m => m)}
+                    </g>
                 </g>
-            </g>
-        </svg>
+            </svg>
+        </div>
     )
 }
 

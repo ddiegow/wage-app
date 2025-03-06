@@ -32,7 +32,7 @@ const ViewComponent = () => {
 
 
     return (
-        <div className="flex flex-col">
+        <div className="flex flex-col items-center">
             {/* top bar (buttons + title) */}
             <div className="flex justify-between m-1 mb-2">
                 < MenuComponent />
@@ -49,9 +49,8 @@ const ViewComponent = () => {
                 {
                     selectedView === "industry" &&
                     <>
-                        {<IndustryComponent />
-                        }
                         <MapComponent />
+                        <IndustryComponent />
                     </>
 
                 }
