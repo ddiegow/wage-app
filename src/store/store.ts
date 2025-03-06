@@ -13,6 +13,7 @@ type StoreState = {
     title: string;
     mapData: string;
     mappings: JSX.Element[];
+    showIndustryMenu: boolean;
 }
 type StoreActions = {
     setWageData: (wageData: WageData) => void;
@@ -25,7 +26,8 @@ type StoreActions = {
     setTitle: (title: string) => void;
     setMapData: (mapData: string) => void;
     resetState: () => void;
-    setMappings: (mappings: JSX.Element[]) => void
+    setMappings: (mappings: JSX.Element[]) => void;
+    toggleIndustryMenu: () => void;
 }
 
 type Store = StoreState & StoreActions;
@@ -40,8 +42,8 @@ export const useAppStore = create<Store>((set) => ({
     hoveredPrefecture: "",
     title: "",
     mapData: "",
-    mappings: []
-    ,
+    mappings: [],
+    showIndustryMenu: false,
     setWageData: (wageData) => set({ wageData }),
     setPrefectureEntries: (prefectureEntries) => set({ prefectureEntries }),
     setSelectedPrefecture: (selectedPrefecture) => set({ selectedPrefecture }),
@@ -60,4 +62,5 @@ export const useAppStore = create<Store>((set) => ({
         hoveredPrefecture: "",
         title: "",
     }),
+    toggleIndustryMenu: () => set(state => ({ ...state, showIndustryMenu: !state.showIndustryMenu }))
 }))
