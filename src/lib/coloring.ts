@@ -26,7 +26,7 @@ export const getColorPrefectureView = (isSelected: boolean, isHovered: boolean) 
     * @param prefecture the prefecture code
     * @returns the corresponding color code
 */
-export const getColorJobView = (jobData: JobEntries, prefCode: string) => {
+export const getColorJobView = (isSelected: boolean, isHovered: boolean, jobData: JobEntries, prefCode: string) => {
     // this will hold the yearly income for the selected job per prefecture
     const amounts: number[] = [];
     // take out the amounts and put them in the array
@@ -52,5 +52,7 @@ export const getColorJobView = (jobData: JobEntries, prefCode: string) => {
     // calculate the color
     const color = ValueToColor(min, max, data.data.salary)
     // return it in hsl format
-    return "hsl(" + color.toString() + ",100%, 50%)";
+    if (isHovered || isSelected)
+        console.log("here")
+    return "hsl(" + color.toString() + `,${isHovered || isSelected ? "25" : "100"}%, 50%)`;
 }

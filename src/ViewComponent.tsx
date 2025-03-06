@@ -89,8 +89,8 @@ const ViewComponent = () => {
                         {selectedJobEntry &&
                             <div>
                                 <p>Prefecture: {selectedJobEntry.prefecture.name}</p>
-                                <p>Yearly salary: ¥ {NumberWithCommas(selectedJobEntry.data.salary * 1000)}</p>
-                                <p>Sample size: {selectedJobEntry.data.sampleSize * 10} people</p>
+                                <p>Yearly salary: {selectedJobEntry.data.salary ? "¥ " + NumberWithCommas(selectedJobEntry.data.salary * 1000) : "No data"}</p>
+                                <p>Sample size: {selectedJobEntry.data.sampleSize ? selectedJobEntry.data.sampleSize * 10 + " people" : "No data"}</p>
                             </div>}
                         {showIndustryMenu && <IndustryComponent />}
                     </>

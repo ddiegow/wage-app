@@ -22,16 +22,17 @@ export const GenerateMapElements = (
     const mapping = allG.map((g: SVGGElement) => {
         const prefCode = g.getAttribute("data-code") || "";
         let color = "";
+        const isSelected = correctPrefecture(prefCode) === selectedPrefecture?.code
+        const isHovered = prefCode === hoveredPrefecture
         // depending on which mode we're in, use one filling method or another
         if (selectedView === "prefecture") {
-            const isSelected = correctPrefecture(prefCode) === selectedPrefecture?.code
-            const isHovered = prefCode === hoveredPrefecture
+
             color = getColorPrefectureView(isSelected, isHovered)
         } else {
             if (!jobEntries)
                 color = "#EEEEEE"
             else
-                color = getColorJobView(jobEntries, prefCode)
+                color = getColorJobView(isSelected, isHovered, jobEntries, prefCode)
         }
         const prefectureName = g.querySelector('title')?.textContent || ""
         const prefectureTooltip = tooltips.find(t => t.prefecture.name === prefectureName)
