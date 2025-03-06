@@ -27,7 +27,7 @@ const IndustryComponent = () => {
         return data.data
     }
     return (
-        <div className={`transition-opacity duration-500 ease-out ${fadeToggle ? "opacity-0" : "opacity-100"}  grid grid-cols-3 items-stretch justify-center items-center gap-2 m-5 min-w-1/2`}>
+        <div className={`transition-opacity duration-500 ease-out ${fadeToggle ? "opacity-0" : "opacity-100"}`}>
             {/* Grid with the available industry choices */}
             {!selectedIndustry && (
                 <IndustrySlotsComponent

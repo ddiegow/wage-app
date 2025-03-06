@@ -8,7 +8,6 @@ const ViewComponent = () => {
     const {
         wageData,
         selectedView,
-        selectedPrefecture,
         prefectureEntries,
         setMapData,
     } = useAppStore();
@@ -33,12 +32,12 @@ const ViewComponent = () => {
 
 
     return (
-        <div className="h-screen">
+        <div className="flex flex-col">
             {/* top bar (buttons + title) */}
-            <div className="flex justify-between m-5">
+            <div className="flex justify-between m-1 mb-2">
                 < MenuComponent />
             </div>
-            <div className={"flex gap-20 justify-center " + (!selectedPrefecture ? "h-9/10" : "")}>
+            <div >
                 {/* view by prefecture */}
                 {selectedView === "prefecture" &&
                     <>

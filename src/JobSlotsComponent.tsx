@@ -21,10 +21,10 @@ const JobSlotsComponent = (
                 <div key={uuidv4()} onClick={selectedView === "industry" ? () => {
                     setSelectedJob(job)
                     setTitle(job.name);
-                } : () => { }} className={`border-white border-solid border-1 p-3 text-center ${selectedView === "industry" ? "hover:cursor-pointer hover:bg-blue-700" : ""} ${job.code === selectedJob?.code ? " bg-blue-700" : ""}`}>
-                    <p >
+                } : () => { }} className={`border-white border-solid border-1 p-1 text-center ${selectedView === "industry" ? "hover:cursor-pointer hover:bg-blue-700" : ""} ${job.code === selectedJob?.code ? " bg-blue-700" : ""}`}>
+                    <li >
                         {job.name}
-                    </p>
+                    </li>
                     {selectedView === "prefecture" ? <><p>{getAmountsFromStatistics(job).salary ? `¥ ${NumberWithCommas(getAmountsFromStatistics(job).salary * 1000)} a year` : "No data"}</p><p>{`(${getAmountsFromStatistics(job).salary ? getAmountsFromStatistics(job).sampleSize + " person sample size" : ""})`}</p></> : null}
                 </div>
             ))
