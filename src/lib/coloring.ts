@@ -33,7 +33,6 @@ export const getColorJobView = (jobData: JobEntries, prefCode: string) => {
     for (const job of jobData.values)
         if (job.data.salary)
             amounts.push(job.data.salary)
-    console.log(`amounts: `, amounts)
     // calculate the max and min values to be used to calculate the color scheme
     const max = Math.max(...amounts);
     const min = Math.min(...amounts);
@@ -53,6 +52,5 @@ export const getColorJobView = (jobData: JobEntries, prefCode: string) => {
     // calculate the color
     const color = ValueToColor(min, max, data.data.salary)
     // return it in hsl format
-    console.log("returning hsl(" + color.toString() + ",100%, 50%)")
     return "hsl(" + color.toString() + ",100%, 50%)";
 }

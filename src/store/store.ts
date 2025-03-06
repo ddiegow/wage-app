@@ -1,10 +1,11 @@
 import { JSX } from "react";
 import { create } from "zustand";
-import { Job, Prefecture, PrefectureEntries, WageData } from "../lib/types";
+import { Job, JobEntryValue, Prefecture, PrefectureEntries, WageData } from "../lib/types";
 
 type StoreState = {
     wageData: WageData | null;
     prefectureEntries: PrefectureEntries | null;
+    selectedJobEntry: JobEntryValue | null;
     selectedPrefecture: Prefecture | null;
     selectedIndustry: string;
     selectedJob: Job | null;
@@ -18,6 +19,7 @@ type StoreState = {
 type StoreActions = {
     setWageData: (wageData: WageData) => void;
     setPrefectureEntries: (prefectureEntries: PrefectureEntries) => void;
+    setSelectedJobEntry: (selectedJobEntry: JobEntryValue) => void;
     setSelectedPrefecture: (selectedPrefecture: Prefecture | null) => void;
     setSelectedIndustry: (selectedIndustry: string) => void;
     setSelectedJob: (selectedJob: Job | null) => void;
@@ -35,6 +37,7 @@ type Store = StoreState & StoreActions;
 export const useAppStore = create<Store>((set) => ({
     wageData: null,
     prefectureEntries: null,
+    selectedJobEntry: null,
     selectedPrefecture: null,
     selectedIndustry: "",
     selectedJob: null,
@@ -46,6 +49,7 @@ export const useAppStore = create<Store>((set) => ({
     showIndustryMenu: false,
     setWageData: (wageData) => set({ wageData }),
     setPrefectureEntries: (prefectureEntries) => set({ prefectureEntries }),
+    setSelectedJobEntry: (selectedJobEntry) => set({ selectedJobEntry }),
     setSelectedPrefecture: (selectedPrefecture) => set({ selectedPrefecture }),
     setSelectedIndustry: (selectedIndustry) => set({ selectedIndustry }),
     setSelectedJob: (selectedJob) => set({ selectedJob }),
